@@ -1,0 +1,193 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+
+  /* Professional hover design tokens */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast: 200ms;
+  --dur-med: 320ms;
+  --dur-slow: 500ms;
+
+  --shadow-card:
+    0 1px 3px rgba(0,0,0,0.06),
+    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-card-hover:
+    0 4px 8px rgba(0,0,0,0.06),
+    0 12px 32px rgba(0,0,0,0.14),
+    0 24px 48px rgba(0,0,0,0.08);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ─────────────────────────────────────────
+   NAV LINKS  —  left-to-right underline
+   ───────────────────────────────────────── */
+.nav-link {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 3px;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 1.5px;
+  background: #f97316;
+  border-radius: 9999px;
+  transition: width var(--dur-med) var(--ease-out);
+}
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* ─────────────────────────────────────────
+   DESTINATION CARDS  —  lift + shadow + image zoom
+   (design unchanged — pure hover layer only)
+   ───────────────────────────────────────── */
+.card-hover {
+  transition:
+    transform 0.30s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.30s ease;
+}
+.card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.06),
+    0 12px 28px rgba(0, 0, 0, 0.13),
+    0 24px 40px rgba(0, 0, 0, 0.07);
+}
+
+/* Image zooms slowly on card hover */
+.img-zoom {
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.card-hover:hover .img-zoom {
+  transform: scale(1.06);
+}
+
+
+/* ─────────────────────────────────────────
+   BUTTONS  —  lift + clean shadow, no glow
+   ───────────────────────────────────────── */
+.btn-pro {
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.btn-pro:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+.btn-pro:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* ─────────────────────────────────────────
+   FEATURE CARDS  —  border reveal + tint
+   ───────────────────────────────────────── */
+.feature-card {
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid transparent;
+  transition:
+    border-color var(--dur-med) var(--ease-out),
+    background-color var(--dur-med) var(--ease-out),
+    transform var(--dur-med) var(--ease-out),
+    box-shadow var(--dur-med) var(--ease-out);
+}
+.feature-card:hover {
+  border-color: rgba(249, 115, 22, 0.25);
+  background-color: #fffaf7;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+.feature-icon {
+  transition: transform var(--dur-med) var(--ease-out);
+}
+.feature-card:hover .feature-icon {
+  transform: scale(1.08);
+}
+
+/* ─────────────────────────────────────────
+   REVIEW CARDS  —  border reveal + lift
+   ───────────────────────────────────────── */
+.review-card {
+  border: 1px solid #f3f4f6;
+  transition:
+    border-color var(--dur-med) var(--ease-out),
+    transform var(--dur-med) var(--ease-out),
+    box-shadow var(--dur-med) var(--ease-out);
+}
+.review-card:hover {
+  border-color: #fed7aa;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.09);
+}
+
+/* ─────────────────────────────────────────
+   FOOTER LINKS  —  x-slide + color
+   ───────────────────────────────────────── */
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    gap var(--dur-fast) var(--ease-out);
+}
+.footer-link:hover {
+  color: #f97316;
+  gap: 4px;
+}
+.footer-link::before {
+  content: '›';
+  opacity: 0;
+  font-size: 0.85rem;
+  color: #f97316;
+  transition:
+    opacity var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+  transform: translateX(-4px);
+}
+.footer-link:hover::before {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ─────────────────────────────────────────
+   SOCIAL ICON BUTTONS in footer
+   ───────────────────────────────────────── */
+.social-btn {
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+.social-btn:hover {
+  transform: translateY(-2px);
+  background-color: #f97316;
+}
