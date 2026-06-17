@@ -57,8 +57,6 @@ const values = [
 export default function AboutPage() {
     return (
         <div className="font-sans text-gray-800 bg-white">
-            {/* ── Nav breadcrumb ── */}
-
             {/* ── Hero ── */}
             <section className="relative h-60 md:h-100">
                 <img
@@ -68,11 +66,11 @@ export default function AboutPage() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent" />
                 <div className="absolute bottom-8 left-8">
-                    <h1 className="text-white text-4xl md:text-5xl font-bold tracking-tight">About US</h1>
+                    <h1 className="text-white text-4xl md:text-5xl font-bold tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>About US</h1>
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-r to-transparent">
-                    <Link href="/" className="text-sm text-orange-600 font-semibold hover:text-orange-700 transition-colors absolute top-4 right-10">
-                        <button className="border border-orange-400 text-orange-500 px-3 py-1 rounded text-sm font-medium hover:text-orange-700 hover:border-orange-700 transition-colors">
+                    <Link href="/" className="text-sm text-white font-semibold hover:text-orange-700 transition-colors absolute top-4 right-10" style={{ fontFamily: "'Playfair Display', serif" }}>
+                        <button className="border border-white text-white px-3 py-1 rounded text-sm font-semibold font-medium hover:text-orange-700 hover:border-orange-700 transition-colors">
                             Back to Home
                         </button>
                     </Link>
@@ -82,16 +80,16 @@ export default function AboutPage() {
             {/* ── Who We Are ── */}
             <section className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-10 items-center">
                 <div>
-                    <h2 className="text-2xl font-bold text-orange-500 mb-4">Who We Are</h2>
-                    <p className="text-gray-600 leading-relaxed mb-4">
+                    <h2 className="text-2xl font-bold text-orange-500 mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>Who We Are</h2>
+                    <p className="text-gray-600 leading-relaxed mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
                         Tour Spot is a passionate team of travel enthusiasts dedicated to making your travel dreams a reality.
                         We believe travel is more than just visiting new places — it's about creating memories that last a lifetime.
                     </p>
-                    <p className="text-gray-600 leading-relaxed mb-8">
+                    <p className="text-gray-600 leading-relaxed mb-8" style={{ fontFamily: "'Playfair Display', serif" }}>
                         With carefully crafted tour packages, expert guidance, and 24/7 support, we ensure a smooth and
                         unforgettable experience for every traveler.
                     </p>
-                    <button className="border border-orange-400 text-orange-500 px-6 py-2 rounded text-sm font-medium hover:bg-orange-50 transition-colors">
+                    <button className="border border-orange-400 text-orange-500 px-6 py-2 rounded text-sm font-semibold hover:text-orange-700 hover:border-orange-700 transition-colors" style={{ fontFamily: "'Playfair Display', serif" }}>
                         Explore Packages
                     </button>
                 </div>
@@ -107,10 +105,10 @@ export default function AboutPage() {
             {/* ── Mission & Vision ── */}
             <section className="bg-orange-50 py-16">
                 <div className="max-w-6xl mx-auto px-6">
-                    <p className="text-center text-orange-500 text-sm font-semibold tracking-widest uppercase mb-1">
+                    <p className="text-center text-orange-500 text-sm font-semibold tracking-widest uppercase mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
                         Our Mission
                     </p>
-                    <h2 className="text-center text-2xl font-bold text-gray-800 mb-12">Our Mission &amp; Vision</h2>
+                    <h2 className="text-center text-2xl font-bold text-gray-800 mb-12" style={{ fontFamily: "'Playfair Display', serif" }}>Our Mission &amp; Vision</h2>
                     <div className="grid md:grid-cols-2 gap-8">
                         {missionCards.map((card) => (
                             <div
@@ -120,8 +118,12 @@ export default function AboutPage() {
                                 <div className="w-16 h-16 rounded-full bg-orange-50 flex items-center justify-center border border-orange-100">
                                     {card.icon}
                                 </div>
-                                <h3 className="text-lg font-bold text-gray-800">{card.title}</h3>
-                                <p className="text-gray-500 text-sm leading-relaxed">{card.text}</p>
+                                <h3 className="text-lg font-bold text-gray-800" style={{ fontFamily: "'Playfair Display', serif" }}>
+                                    {card.title}
+                                </h3>
+                                <p className="text-gray-500 text-sm leading-relaxed" style={{ fontFamily: "'Playfair Display', serif" }}>
+                                    {card.text}
+                                </p>
                             </div>
                         ))}
                     </div>
@@ -131,18 +133,22 @@ export default function AboutPage() {
             {/* ── Our Values ── */}
             <section className="py-16">
                 <div className="max-w-6xl mx-auto px-6">
-                    <p className="text-center text-gray-500 text-sm font-semibold tracking-widest uppercase mb-1">
+                    <p className="text-center text-gray-500 text-sm font-semibold tracking-widest uppercase mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
                         Our Values
                     </p>
-                    <h2 className="text-center text-3xl font-bold text-orange-500 mb-12">What Drives Us</h2>
+                    <h2 className="text-center text-3xl font-bold text-orange-500 mb-12" style={{ fontFamily: "'Playfair Display', serif" }}>What Drives Us</h2>
                     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {values.map((v) => (
                             <div key={v.title} className="flex flex-col items-center text-center gap-3 p-6">
                                 <div className="w-14 h-14 rounded-full bg-orange-50 flex items-center justify-center border border-orange-100">
                                     {v.icon}
                                 </div>
-                                <h3 className="font-bold text-gray-800">{v.title}</h3>
-                                <p className="text-gray-500 text-sm leading-relaxed">{v.text}</p>
+                                <h3 className="font-bold text-gray-800" style={{ fontFamily: "'Playfair Display', serif" }}>
+                                    {v.title}
+                                </h3>
+                                <p className="text-gray-500 text-sm leading-relaxed" style={{ fontFamily: "'Playfair Display', serif" }}>
+                                    {v.text}
+                                </p>
                             </div>
                         ))}
                     </div>
