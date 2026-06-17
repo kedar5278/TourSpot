@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import React from "react";
-import Footer from "./footer";
 import {
   FiHome,
   FiTruck,
@@ -26,8 +25,6 @@ const TrainIcon = () => <FiMapPin className="text-orange-500 text-2xl" />;
 const FlightIcon = () => <FiSend className="text-orange-500 text-2xl" />;
 const CarIcon = () => <FiBriefcase className="text-orange-500 text-2xl" />;
 const GuideIcon = () => <FiStar className="text-orange-500 text-2xl" />;
-const InsuranceIcon = () => <FiShield className="text-orange-500 text-2xl" />;
-const VisaIcon = () => <FiGlobe className="text-orange-500 text-2xl" />;
 
 // ─── Data ────────────────────────────────────────────────────────────────────────
 
@@ -92,26 +89,6 @@ const services = [
       "https://images.unsplash.com/photo-1527631746610-bca00a040d60?w=600&q=80",
     color: "from-yellow-400 to-orange-400",
   },
-  {
-    icon: <InsuranceIcon />,
-    title: "Travel Insurance",
-    description:
-      "Travel worry-free with comprehensive insurance plans covering medical emergencies, trip cancellations, and baggage loss.",
-    features: ["Medical Cover", "Trip Cancellation", "Baggage Protection"],
-    image:
-      "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=600&q=80",
-    color: "from-emerald-400 to-green-400",
-  },
-  {
-    icon: <VisaIcon />,
-    title: "Visa Assistance",
-    description:
-      "Get expert visa guidance and documentation support for hassle-free international travel. We handle the paperwork for you.",
-    features: ["Document Support", "Fast Processing", "Expert Guidance"],
-    image:
-      "https://images.unsplash.com/photo-1554224154-26032ffc0d07?w=600&q=80",
-    color: "from-rose-400 to-pink-400",
-  },
 ];
 
 const whyUs = [
@@ -166,10 +143,10 @@ export default function ServicesPage() {
         </div>
         <Link
           href="/"
-          className="absolute top-4 right-8 md:right-12"
+          className="absolute top-3 right-4 md:right-10"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
-          <button className="border border-white text-white px-4 py-1.5 rounded text-sm font-semibold hover:text-orange-500 hover:border-orange-500 transition-colors">
+          <button className="border border-white text-white px-3 py-1 rounded text-sm font-semibold hover:text-orange-500 hover:border-orange-500 transition-colors">
             Back to Home
           </button>
         </Link>
@@ -256,11 +233,11 @@ export default function ServicesPage() {
                     </div>
                   </div>
                   <button
-                    className="btn-pro inline-flex items-center gap-2 text-orange-500 font-semibold text-sm hover:text-orange-600 transition-colors self-start"
+                    className="border border-orange-500 text-orange-500 hover:text-orange-700 hover:border-orange-700 cursor-pointer transition-colors px-6 py-2 rounded-full font-semibold flex items-center gap-2 w-max"
                     style={{ fontFamily: "'Playfair Display', serif" }}
                   >
-                    Book Now
-                    <FiArrowRight className="text-base" />
+                    <span className="">Book Now</span>
+                    <FiArrowRight className="book-now-arrow text-base" />
                   </button>
                 </div>
               </div>
@@ -411,8 +388,6 @@ export default function ServicesPage() {
           </Link>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }
