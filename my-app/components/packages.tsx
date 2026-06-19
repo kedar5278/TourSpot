@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import React, { useState } from "react";
-
+import { allPackages, type Package } from "@/data/packages";
 import {
   FiMapPin,
   FiCalendar,
@@ -13,212 +13,6 @@ import {
   FiCheckCircle,
   FiFilter,
 } from "react-icons/fi";
-
-// ─── Data ────────────────────────────────────────────────────────────────────────
-
-type Package = {
-  name: string;
-  location: string;
-  image: string;
-  price: string;
-  originalPrice?: string;
-  discount?: string;
-  duration: string;
-  rating: number;
-  reviews: number;
-  category: string;
-  highlights: string[];
-  groupSize: string;
-  featured?: boolean;
-};
-
-const allPackages: Package[] = [
-  {
-    name: "Nainital",
-    location: "Uttarakhand, India",
-    image:
-      "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=600&q=80",
-    price: "₹5,499",
-    originalPrice: "₹7,499",
-    discount: "27% OFF",
-    duration: "3 Days / 2 Nights",
-    rating: 4.7,
-    reviews: 312,
-    category: "Mountain",
-    highlights: ["Lake Boating", "Mall Road", "Snow View"],
-    groupSize: "2–12",
-    featured: true,
-  },
-  {
-    name: "Jaipur",
-    location: "Rajasthan, India",
-    image:
-      "https://images.unsplash.com/photo-1477587458883-47145ed94245?w=600&q=80",
-    price: "₹6,000",
-    originalPrice: "₹8,500",
-    discount: "29% OFF",
-    duration: "4 Days / 3 Nights",
-    rating: 4.8,
-    reviews: 489,
-    category: "Heritage",
-    highlights: ["Amber Fort", "Hawa Mahal", "City Palace"],
-    groupSize: "2–16",
-    featured: true,
-  },
-  {
-    name: "Kerala",
-    location: "South India",
-    image:
-      "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=600&q=80",
-    price: "₹7,500",
-    originalPrice: "₹10,000",
-    discount: "25% OFF",
-    duration: "5 Days / 4 Nights",
-    rating: 4.9,
-    reviews: 621,
-    category: "Beach",
-    highlights: ["Backwaters", "Munnar Hills", "Ayurveda"],
-    groupSize: "2–10",
-    featured: true,
-  },
-  {
-    name: "Ujjain",
-    location: "Madhya Pradesh, India",
-    image:
-      "https://images.unsplash.com/photo-1545126222-f6b43f9d3e62?w=600&q=80",
-    price: "₹3,500",
-    originalPrice: "₹5,000",
-    discount: "30% OFF",
-    duration: "2 Days / 1 Night",
-    rating: 4.5,
-    reviews: 198,
-    category: "Pilgrimage",
-    highlights: ["Mahakaleshwar", "Shipra River", "Ram Ghat"],
-    groupSize: "2–20",
-  },
-  {
-    name: "Varanasi",
-    location: "Uttar Pradesh, India",
-    image:
-      "https://images.unsplash.com/photo-1561361058-c24e09e0b2a1?w=600&q=80",
-    price: "₹4,999",
-    originalPrice: "₹7,499",
-    discount: "33% OFF",
-    duration: "3 Days / 2 Nights",
-    rating: 4.6,
-    reviews: 410,
-    category: "Pilgrimage",
-    highlights: ["Ganga Aarti", "Boat Ride", "Sarnath"],
-    groupSize: "2–15",
-    featured: true,
-  },
-  {
-    name: "Northeast India",
-    location: "Seven Sisters, India",
-    image:
-      "https://images.unsplash.com/photo-1600175079-0ece4d83ef3e?w=600&q=80",
-    price: "₹9,999",
-    originalPrice: "₹12,000",
-    discount: "17% OFF",
-    duration: "7 Days / 6 Nights",
-    rating: 4.8,
-    reviews: 276,
-    category: "Adventure",
-    highlights: ["Kaziranga", "Tawang", "Living Root Bridge"],
-    groupSize: "4–12",
-  },
-  {
-    name: "Statue of Unity",
-    location: "Gujarat, India",
-    image:
-      "https://images.unsplash.com/photo-1599232288111-29ea78231b29?w=600&q=80",
-    price: "₹5,999",
-    originalPrice: "₹7,999",
-    discount: "25% OFF",
-    duration: "2 Days / 1 Night",
-    rating: 4.4,
-    reviews: 345,
-    category: "Heritage",
-    highlights: ["Observation Deck", "Valley View", "Light Show"],
-    groupSize: "2–20",
-  },
-  {
-    name: "Lakshadweep",
-    location: "Union Territory, India",
-    image:
-      "https://images.unsplash.com/photo-1559628233-100c798642d8?w=600&q=80",
-    price: "₹22,000",
-    originalPrice: "₹38,000",
-    discount: "42% OFF",
-    duration: "5 Days / 4 Nights",
-    rating: 4.9,
-    reviews: 189,
-    category: "Beach",
-    highlights: ["Scuba Diving", "Coral Reefs", "Island Hop"],
-    groupSize: "2–8",
-    featured: true,
-  },
-  {
-    name: "Goa",
-    location: "West India",
-    image:
-      "https://images.unsplash.com/photo-1512336831938-6a0ef5f79162?w=600&q=80",
-    price: "₹6,500",
-    originalPrice: "₹9,000",
-    discount: "28% OFF",
-    duration: "4 Days / 3 Nights",
-    rating: 4.7,
-    reviews: 743,
-    category: "Beach",
-    highlights: ["Beach Party", "Fort Aguada", "Water Sports"],
-    groupSize: "2–16",
-  },
-  {
-    name: "Manali",
-    location: "Himachal Pradesh, India",
-    image:
-      "https://images.unsplash.com/photo-1626015449046-8f0e73b12474?w=600&q=80",
-    price: "₹7,999",
-    originalPrice: "₹11,000",
-    discount: "27% OFF",
-    duration: "5 Days / 4 Nights",
-    rating: 4.8,
-    reviews: 567,
-    category: "Mountain",
-    highlights: ["Rohtang Pass", "Solang Valley", "River Rafting"],
-    groupSize: "2–14",
-  },
-  {
-    name: "Rishikesh",
-    location: "Uttarakhand, India",
-    image:
-      "https://images.unsplash.com/photo-1558431382-276ab21d4b67?w=600&q=80",
-    price: "₹4,500",
-    originalPrice: "₹6,500",
-    discount: "31% OFF",
-    duration: "3 Days / 2 Nights",
-    rating: 4.6,
-    reviews: 398,
-    category: "Adventure",
-    highlights: ["River Rafting", "Bungee Jump", "Yoga Retreat"],
-    groupSize: "2–18",
-  },
-  {
-    name: "Darjeeling",
-    location: "West Bengal, India",
-    image:
-      "https://images.unsplash.com/photo-1622308644420-3b2578d8e02c?w=600&q=80",
-    price: "₹6,999",
-    originalPrice: "₹9,500",
-    discount: "26% OFF",
-    duration: "4 Days / 3 Nights",
-    rating: 4.7,
-    reviews: 432,
-    category: "Mountain",
-    highlights: ["Tiger Hill", "Toy Train", "Tea Gardens"],
-    groupSize: "2–12",
-  },
-];
 
 const categories = [
   "All",
@@ -469,13 +263,14 @@ export default function PackagesPage() {
                       )}
                     </div>
                   </div>
-                  <button
-                    className="inline-flex items-center gap-1.5 font-semibold text-xs border border-orange-400 text-orange-500 px-4 py-2 rounded-full hover:text-orange-700 hover:border-orange-700 transition-colors"
+                  <Link
+                    href={`/packages/${pkg.slug}`}
+                    className="book-now-btn inline-flex items-center gap-1.5 font-semibold text-xs border border-orange-400 text-orange-500 px-4 py-2 rounded-full"
                     style={{ fontFamily: "'Playfair Display', serif" }}
                   >
-                    <span className="">View Details</span>
+                    <span className="book-now-text">View Details</span>
                     <FiArrowRight className="book-now-arrow text-sm" />
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
