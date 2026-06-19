@@ -1,37 +1,41 @@
 import React from 'react';
+import Link from 'next/link';
 
 const offers = [
   {
-    name: 'Varanasi',
+    name: 'Rishikesh',
+    slug: 'rishikesh',
     location: 'India',
     price: '₹4,999',
     originalPrice: '₹7,499',
-    image: 'https://images.unsplash.com/photo-1561361058-c24e09e0b2a1?w=400&q=80',
-    badge: null,
-  },
-  {
-    name: 'Northeast India',
-    location: 'India',
-    price: '₹9,999',
-    originalPrice: '₹12,000',
-    image: 'https://images.unsplash.com/photo-1600175079-0ece4d83ef3e?w=400&q=80',
+    image: '/images/Rishikesh.jpg',
     badge: null,
   },
   {
     name: 'Statue of Unity',
+    slug: 'statue-of-unity',
     location: 'India',
-    price: '₹5,999',
-    originalPrice: '₹7,999',
-    image: 'https://images.unsplash.com/photo-1599232288111-29ea78231b29?w=400&q=80',
+    price: '₹9,999',
+    originalPrice: '₹12,000',
+    image: '/images/Statue of Unity.jpg',
     badge: null,
   },
   {
-    name: 'Lakshadweep',
+    name: 'Ujjain',
+    slug: 'ujjain',
+    location: 'India',
+    price: '₹5,999',
+    originalPrice: '₹7,999',
+    image: '/images/Ujjain.jpg',
+    badge: null,
+  },
+  {
+    name: 'Varansi',
+    slug: 'varanasi',
     location: 'India',
     price: '₹22,000',
     originalPrice: '₹38,000',
-    image: 'https://images.unsplash.com/photo-1559628233-100c798642d8?w=400&q=80',
-    badge: 'Lakshadweep\nOfficial',
+    image: '/images/Varanasi.jpg',
   },
 ];
 
@@ -43,9 +47,10 @@ export default function SpecialOffers() {
       </h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {offers.map((offer) => (
-          <div
+          <Link
             key={offer.name}
-            className="card-hover rounded-4xl w-80 h-80 overflow-hidden shadow-md cursor-pointer group relative"
+            href={`/packages/${offer.slug}`}
+            className="card-hover rounded-4xl w-80 h-80 overflow-hidden shadow-md cursor-pointer group relative block"
           >
             {/* Image section */}
             <div className="relative h-44 md:h-55 overflow-hidden">
@@ -60,7 +65,6 @@ export default function SpecialOffers() {
                   className="absolute top-2 right-2 bg-green-600 text-white text-[10px] font-bold px-2 py-1 rounded text-center leading-tight"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
-                  {offer.badge.split('\n').map((line, i) => <div key={i}>{line}</div>)}
                 </div>
               )}
               <h3
@@ -88,7 +92,7 @@ export default function SpecialOffers() {
                 </span>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>

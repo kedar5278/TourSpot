@@ -1,30 +1,35 @@
 import React from 'react';
+import Link from 'next/link';
 
 const packages = [
   {
-    name: 'Nainital',
+    name: 'Goa',
+    slug: 'goa',
     location: 'India',
     price: '₹5,499',
     originalPrice: '₹7,499',
-    image: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=400&q=80',
+    image: '/images/Goa.jpg',
   },
   {
-    name: 'Jaipur',
+    name: 'Lakshadweep',
+    slug: 'lakshadweep',
     location: 'India',
     price: '₹6,000',
-    image: 'https://images.unsplash.com/photo-1477587458883-47145ed94245?w=400&q=80',
+    image: '/images/Lakshdweep.jpg',
   },
   {
-    name: 'Kerala',
+    name: 'Manali',
+    slug: 'manali',
     location: 'India',
     price: '₹7,500',
-    image: 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=400&q=80',
+    image: '/images/Manali.jpg',
   },
   {
-    name: 'Ujjain',
+    name: 'North India',
+    slug: 'northeast-india',
     location: 'India',
     price: '₹3,500',
-    image: 'https://images.unsplash.com/photo-1545126222-f6b43f9d3e62?w=400&q=80',
+    image: '/images/North India.jpg',
   },
 ];
 
@@ -36,9 +41,10 @@ export default function PopularPackages() {
       </h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
         {packages.map((pkg) => (
-          <div
+          <Link
             key={pkg.name}
-            className="card-hover rounded-4xl w-80 h-80 overflow-hidden shadow-md cursor-pointer group"
+            href={`/packages/${pkg.slug}`}
+            className="card-hover rounded-4xl w-80 h-80 overflow-hidden shadow-md cursor-pointer group block"
           >
             {/* Image section */}
             <div className="relative h-44 md:h-55 overflow-hidden">
@@ -75,7 +81,7 @@ export default function PopularPackages() {
                 )}
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>

@@ -30,6 +30,7 @@ const GuideIcon = () => <FiStar className="text-orange-500 text-2xl" />;
 
 const services = [
   {
+    slug: "hotel-booking",
     icon: <HotelIcon />,
     title: "Hotel Booking",
     description:
@@ -40,6 +41,7 @@ const services = [
     color: "from-orange-400 to-red-400",
   },
   {
+    slug: "bus-booking",
     icon: <BusIcon />,
     title: "Bus Booking",
     description:
@@ -50,6 +52,7 @@ const services = [
     color: "from-blue-400 to-indigo-400",
   },
   {
+    slug: "train-booking",
     icon: <TrainIcon />,
     title: "Train Booking",
     description:
@@ -60,16 +63,18 @@ const services = [
     color: "from-green-400 to-teal-400",
   },
   {
+    slug: "flight-booking",
     icon: <FlightIcon />,
     title: "Flight Booking",
     description:
       "Compare and book affordable flight tickets to domestic and international destinations with the best deals and flexible options.",
     features: ["Lowest Fares", "Web Check-in", "Flight Alerts"],
     image:
-      "https://images.unsplash.com/photo-1436491865332-7a61a109db05?w=600&q=80",
+      "flight.webp",
     color: "from-sky-400 to-blue-400",
   },
   {
+    slug: "car-rental",
     icon: <CarIcon />,
     title: "Car Rental",
     description:
@@ -80,6 +85,7 @@ const services = [
     color: "from-purple-400 to-pink-400",
   },
   {
+    slug: "tour-guide",
     icon: <GuideIcon />,
     title: "Tour Guide",
     description:
@@ -232,13 +238,14 @@ export default function ServicesPage() {
                       ))}
                     </div>
                   </div>
-                  <button
-                    className="border border-orange-500 text-orange-500 hover:text-orange-700 hover:border-orange-700 cursor-pointer transition-colors px-6 py-2 rounded-full font-semibold flex items-center gap-2 w-max"
+                  <Link
+                    href={`/services/book/${service.slug}`}
+                    className="book-now-btn inline-flex items-center gap-2 font-semibold text-sm border border-orange-500 text-orange-500 px-6 py-2 rounded-full w-max"
                     style={{ fontFamily: "'Playfair Display', serif" }}
                   >
-                    <span className="">Book Now</span>
+                    <span className="book-now-text">Book Now</span>
                     <FiArrowRight className="book-now-arrow text-base" />
-                  </button>
+                  </Link>
                 </div>
               </div>
             ))}

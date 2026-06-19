@@ -150,36 +150,6 @@ body {
 }
 
 /* ─────────────────────────────────────────
-   FOOTER LINKS  —  x-slide + color
-   ───────────────────────────────────────── */
-.footer-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0;
-  transition:
-    color var(--dur-fast) var(--ease-out),
-    gap var(--dur-fast) var(--ease-out);
-}
-.footer-link:hover {
-  color: #f97316;
-  gap: 4px;
-}
-.footer-link::before {
-  content: '›';
-  opacity: 0;
-  font-size: 0.85rem;
-  color: #f97316;
-  transition:
-    opacity var(--dur-fast) var(--ease-out),
-    transform var(--dur-fast) var(--ease-out);
-  transform: translateX(-4px);
-}
-.footer-link:hover::before {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-/* ─────────────────────────────────────────
    SOCIAL ICON BUTTONS in footer
    ───────────────────────────────────────── */
 .social-btn {

@@ -29,20 +29,23 @@ export default function Footer() {
     <footer
       className="relative py-16 px-4 md:px-10 text-white"
       style={{
-        backgroundImage: ` url('https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1600&q=80')`,
+        backgroundImage: "url('/images/footer.jpeg')",
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}
     >
-      <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-8">
+      {/* Dark overlay for better text contrast */}
+      <div className="absolute inset-0 bg-black/30"></div>
+      
+      <div className="relative max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-8">
         {cols.map((col) => (
           <div key={col.title} className={col.isBrand ? 'col-span-2 md:col-span-1' : ''}>
-            <h3 className="font-bold text-base mb-4 text-orange-400" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <h3 className="font-bold text-2xl mb-4 text-orange-400" style={{ fontFamily: "'Playfair Display', serif" }}>
               {col.title}
             </h3>
             {col.isBrand ? (
               <>
-                <p className="text-gray-400 text-xs leading-relaxed mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+                <p className="text-white text-xs leading-relaxed mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
                   {col.items[0]}
                 </p>
                 <div className="flex gap-3">
@@ -57,7 +60,7 @@ export default function Footer() {
               <ul className="space-y-2">
                 {col.items.map((item) => (
                   <li key={item}>
-                    <a href="#" className="footer-link text-gray-400 text-xs" style={{ fontFamily: "'Playfair Display', serif" }}>
+                    <a href="#" className="text-white text-[14px] hover:text-gray-300" style={{ fontFamily: "'Playfair Display', serif" }}>
                       {item}
                     </a>
                   </li>

@@ -27,11 +27,11 @@ export const allPackages: Package[] = [
     name: "Nainital",
     location: "Uttarakhand, India",
     image:
-      "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=600&q=80",
+      "/packages_images/Nainital2.jpeg",
     gallery: [
-      "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=900&q=80",
-      "https://images.unsplash.com/photo-1626015449046-8f0e73b12474?w=900&q=80",
-      "https://images.unsplash.com/photo-1558431382-276ab21d4b67?w=900&q=80",
+      "/packages_images/Nainital3.jpeg",
+      "/packages_images/Nainital4",
+      "/packages_images/Nainital5",
     ],
     price: "₹5,499",
     originalPrice: "₹7,499",
@@ -85,8 +85,8 @@ export const allPackages: Package[] = [
     image:
       "https://images.unsplash.com/photo-1477587458883-47145ed94245?w=600&q=80",
     gallery: [
-      "https://images.unsplash.com/photo-1477587458883-47145ed94245?w=900&q=80",
-      "https://images.unsplash.com/photo-1599232288111-29ea78231b29?w=900&q=80",
+      "/packages_images/Jaipur2.jpeg",
+      "/packages_images/Jaipur3.webp",
       "https://images.unsplash.com/photo-1545126222-f6b43f9d3e62?w=900&q=80",
     ],
     price: "₹6,000",
@@ -146,8 +146,8 @@ export const allPackages: Package[] = [
     image:
       "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=600&q=80",
     gallery: [
-      "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=900&q=80",
-      "https://images.unsplash.com/photo-1559628233-100c798642d8?w=900&q=80",
+      "/packages_images/Kerala2.jpeg",
+      "/packages_images/Kerla3.webp",
       "https://images.unsplash.com/photo-1512336831938-6a0ef5f79162?w=900&q=80",
     ],
     price: "₹7,500",
@@ -210,11 +210,11 @@ export const allPackages: Package[] = [
     name: "Ujjain",
     location: "Madhya Pradesh, India",
     image:
-      "https://images.unsplash.com/photo-1545126222-f6b43f9d3e62?w=600&q=80",
+      "/images/Ujjain.jpg",
     gallery: [
-      "https://images.unsplash.com/photo-1545126222-f6b43f9d3e62?w=900&q=80",
-      "https://images.unsplash.com/photo-1561361058-c24e09e0b2a1?w=900&q=80",
-      "https://images.unsplash.com/photo-1600175079-0ece4d83ef3e?w=900&q=80",
+      "/packages_images/Ujjain2.jpeg",
+      "/packages_images/ujjain3.jpeg",
+      "/packages_images/Ujjain4.jpeg",
     ],
     price: "₹3,500",
     originalPrice: "₹5,000",
@@ -260,11 +260,11 @@ export const allPackages: Package[] = [
     name: "Varanasi",
     location: "Uttar Pradesh, India",
     image:
-      "https://images.unsplash.com/photo-1561361058-c24e09e0b2a1?w=600&q=80",
+      "/images/Varanasi.jpg",
     gallery: [
-      "https://images.unsplash.com/photo-1561361058-c24e09e0b2a1?w=900&q=80",
-      "https://images.unsplash.com/photo-1545126222-f6b43f9d3e62?w=900&q=80",
-      "https://images.unsplash.com/photo-1477587458883-47145ed94245?w=900&q=80",
+      "/packages_images/varnasi2.jpeg",
+      "/packages_images/varanasi3.jpeg",
+      "",
     ],
     price: "₹4,999",
     originalPrice: "₹7,499",
@@ -316,11 +316,11 @@ export const allPackages: Package[] = [
     name: "Northeast India",
     location: "Seven Sisters, India",
     image:
-      "https://images.unsplash.com/photo-1600175079-0ece4d83ef3e?w=600&q=80",
+      "/images/North India.jpg",
     gallery: [
-      "https://images.unsplash.com/photo-1600175079-0ece4d83ef3e?w=900&q=80",
-      "https://images.unsplash.com/photo-1626015449046-8f0e73b12474?w=900&q=80",
-      "https://images.unsplash.com/photo-1558431382-276ab21d4b67?w=900&q=80",
+      "/packages_images/North India2.webp",
+      "/packages_images/North India3.jpeg",
+      "/packages_images/Northeast3.jpeg",
     ],
     price: "₹9,999",
     originalPrice: "₹12,000",
@@ -377,11 +377,11 @@ export const allPackages: Package[] = [
     name: "Statue of Unity",
     location: "Gujarat, India",
     image:
-      "https://images.unsplash.com/photo-1599232288111-29ea78231b29?w=600&q=80",
+      "/images/Statue of Unity.jpg",
     gallery: [
-      "https://images.unsplash.com/photo-1599232288111-29ea78231b29?w=900&q=80",
-      "https://images.unsplash.com/photo-1477587458883-47145ed94245?w=900&q=80",
-      "https://images.unsplash.com/photo-1622308644420-3b2578d8e02c?w=900&q=80",
+      "/packages_images/Statue Of Unity2.jpeg",
+      "/packages_images/Statue Of Unity3.jpeg",
+      "/packages_images/Statue of Unity4.jpeg",
     ],
     price: "₹5,999",
     originalPrice: "₹7,999",
@@ -427,11 +427,11 @@ export const allPackages: Package[] = [
     name: "Lakshadweep",
     location: "Union Territory, India",
     image:
-      "https://images.unsplash.com/photo-1559628233-100c798642d8?w=600&q=80",
+      "/images/Lakshdweep.jpg",
     gallery: [
-      "https://images.unsplash.com/photo-1559628233-100c798642d8?w=900&q=80",
-      "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=900&q=80",
-      "https://images.unsplash.com/photo-1512336831938-6a0ef5f79162?w=900&q=80",
+      "/packages_images/lakashdweep2.jpeg",
+      "/packages_images/Lakashdweep3.jpeg",
+      "/packages_images/Lakshadweep4.jpeg",
     ],
     price: "₹22,000",
     originalPrice: "₹38,000",
@@ -493,11 +493,11 @@ export const allPackages: Package[] = [
     name: "Goa",
     location: "West India",
     image:
-      "https://images.unsplash.com/photo-1512336831938-6a0ef5f79162?w=600&q=80",
+      "/images/Goa.jpg",
     gallery: [
-      "https://images.unsplash.com/photo-1512336831938-6a0ef5f79162?w=900&q=80",
-      "https://images.unsplash.com/photo-1559628233-100c798642d8?w=900&q=80",
-      "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=900&q=80",
+      "/packages_images/Goa2.jpeg",
+      "/packages_images/Goa3.jpeg",
+      "/packages_images/goa4.jpeg",
     ],
     price: "₹6,500",
     originalPrice: "₹9,000",
@@ -554,11 +554,11 @@ export const allPackages: Package[] = [
     name: "Manali",
     location: "Himachal Pradesh, India",
     image:
-      "https://images.unsplash.com/photo-1626015449046-8f0e73b12474?w=600&q=80",
+      "/images/Manali.jpg",
     gallery: [
-      "https://images.unsplash.com/photo-1626015449046-8f0e73b12474?w=900&q=80",
-      "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=900&q=80",
-      "https://images.unsplash.com/photo-1558431382-276ab21d4b67?w=900&q=80",
+      "/packages_images/Manali2.jpeg",
+      "/packages_images/Manali3.jpeg",
+      "/packages_images/Manali4.jpeg",
     ],
     price: "₹7,999",
     originalPrice: "₹11,000",
@@ -619,11 +619,11 @@ export const allPackages: Package[] = [
     name: "Rishikesh",
     location: "Uttarakhand, India",
     image:
-      "https://images.unsplash.com/photo-1558431382-276ab21d4b67?w=600&q=80",
+      "/images/Rishikesh.jpg",
     gallery: [
-      "https://images.unsplash.com/photo-1558431382-276ab21d4b67?w=900&q=80",
-      "https://images.unsplash.com/photo-1626015449046-8f0e73b12474?w=900&q=80",
-      "https://images.unsplash.com/photo-1622308644420-3b2578d8e02c?w=900&q=80",
+      "/packages_images/Rishikesh.webp",
+      "/packages_images/Rishikesh2.webp",
+      "/packages_images/Rishikesh4.jpeg",
     ],
     price: "₹4,500",
     originalPrice: "₹6,500",
@@ -674,11 +674,11 @@ export const allPackages: Package[] = [
     name: "Darjeeling",
     location: "West Bengal, India",
     image:
-      "https://images.unsplash.com/photo-1622308644420-3b2578d8e02c?w=600&q=80",
+      "/packages_images/Darjling.jpeg",
     gallery: [
-      "https://images.unsplash.com/photo-1622308644420-3b2578d8e02c?w=900&q=80",
-      "https://images.unsplash.com/photo-1626015449046-8f0e73b12474?w=900&q=80",
-      "https://images.unsplash.com/photo-1558431382-276ab21d4b67?w=900&q=80",
+      "/packages_images/Darjling2.jpeg",
+      "/packages_images/Darjling3.jpeg",
+      "/packages_images/Darjeeling3.webp",
     ],
     price: "₹6,999",
     originalPrice: "₹9,500",
