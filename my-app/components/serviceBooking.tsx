@@ -550,7 +550,7 @@ export default function ServiceBooking({ slug }: { slug: string }) {
   return (
     <div className="font-sans text-gray-800 bg-white">
       {/* ── Hero Banner ── */}
-      <section className="relative h-52 md:h-72">
+      <section className="relative h-44 sm:h-52 md:h-72">
         <img
           src={service.image}
           alt={service.title}
@@ -561,14 +561,14 @@ export default function ServiceBooking({ slug }: { slug: string }) {
 
         <Link
           href="/services"
-          className="absolute top-4 left-4 md:left-8 flex items-center gap-1 text-white text-sm font-semibold hover:text-orange-400 transition-colors"
+          className="absolute top-3 sm:top-4 left-3 sm:left-4 md:left-8 flex items-center gap-1 text-white text-sm font-semibold hover:text-orange-400 transition-colors"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
           <FiArrowLeft className="text-sm" />
           Back to Services
         </Link>
 
-        <div className="absolute bottom-6 left-4 md:left-8 flex items-center gap-3">
+        <div className="absolute bottom-4 sm:bottom-6 left-3 sm:left-4 md:left-8 flex items-center gap-3">
           <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-lg">
             {service.icon}
           </div>
@@ -601,7 +601,7 @@ export default function ServiceBooking({ slug }: { slug: string }) {
       </nav>
 
       {/* ── Main Content ── */}
-      <section className="max-w-6xl mx-auto px-6 py-12 grid lg:grid-cols-3 gap-10">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 grid lg:grid-cols-3 gap-6 sm:gap-10">
         {/* Left — Form */}
         <div className="lg:col-span-2">
           <h2
@@ -627,7 +627,7 @@ export default function ServiceBooking({ slug }: { slug: string }) {
                 <FiCalendar className="text-orange-400" />
                 Trip Details
               </h3>
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {fields.map((field) => {
                   const isFull = !field.half;
                   return (
@@ -678,7 +678,7 @@ export default function ServiceBooking({ slug }: { slug: string }) {
                 <FiUser className="text-orange-400" />
                 Your Details
               </h3>
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {commonContact.map((field) => {
                   const isFull = !field.half;
                   return (

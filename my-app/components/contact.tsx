@@ -25,7 +25,7 @@ export default function ContactPage() {
   return (
     <div className="font-sans text-gray-800 bg-white">
       {/* ── Hero Banner ── */}
-      <section className="relative h-52 md:h-64">
+      <section className="relative h-44 sm:h-52 md:h-64">
         <img
           src="https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=1400&q=80"
           alt="Contact us"
@@ -58,8 +58,8 @@ export default function ContactPage() {
       </section>
 
       {/* ── Contact Info Cards ── */}
-      <section className="max-w-5xl mx-auto px-6 -mt-12 relative z-10">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 -mt-8 sm:-mt-12 relative z-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {[
             {
               icon: <FiPhone className="text-orange-500 text-xl" />,
@@ -110,7 +110,7 @@ export default function ContactPage() {
       </section>
 
       {/* ── Form Section ── */}
-      <section className="max-w-5xl mx-auto px-6 py-14">
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
         <div className="grid md:grid-cols-2 gap-10">
           {/* Left — Message */}
           <div>
@@ -187,7 +187,7 @@ export default function ContactPage() {
                 onSubmit={handleSubmit}
                 className="rounded-2xl border border-gray-100 bg-white shadow-sm p-6 space-y-4"
               >
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label
                       className="text-xs font-semibold text-gray-700 block mb-1"

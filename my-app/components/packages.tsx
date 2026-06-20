@@ -36,14 +36,14 @@ export default function PackagesPage() {
   return (
     <div className="font-sans text-gray-800 bg-white">
       {/* ── Hero Banner ── */}
-      <section className="relative h-64 md:h-96">
+      <section className="relative h-48 sm:h-64 md:h-96">
         <img
           src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1400&q=80"
           alt="Travel packages hero"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
-        <div className="absolute bottom-8 left-8 md:bottom-12 md:left-12">
+        <div className="absolute bottom-4 sm:bottom-8 left-4 sm:left-8 md:bottom-12 md:left-12">
           <p
             className="text-orange-400 text-sm font-semibold tracking-widest uppercase mb-2"
             style={{ fontFamily: "'Playfair Display', serif" }}
@@ -51,7 +51,7 @@ export default function PackagesPage() {
             Explore Our Packages
           </p>
           <h1
-            className="text-white text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight"
+            className="text-white text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             Travel Packages
@@ -59,7 +59,7 @@ export default function PackagesPage() {
         </div>
         <Link
           href="/"
-          className="absolute top-4 right-8 md:right-12"
+          className="absolute top-3 sm:top-4 right-4 sm:right-8 md:right-12"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
           <button className="border border-white text-white px-4 py-1.5 rounded text-sm font-semibold hover:text-orange-500 hover:border-orange-500 transition-colors">
@@ -69,7 +69,7 @@ export default function PackagesPage() {
       </section>
 
       {/* ── Intro Strip ── */}
-      <section className="bg-orange-50 py-10 px-6">
+      <section className="bg-orange-50 py-8 sm:py-10 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto text-center">
           <p
             className="text-gray-500 text-sm font-semibold tracking-widest uppercase mb-2"
@@ -96,8 +96,8 @@ export default function PackagesPage() {
       </section>
 
       {/* ── Category Filter Tabs ── */}
-      <section className="py-8 px-6 border-b border-gray-100 sticky top-0 z-40 bg-white/95 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto flex items-center gap-3 overflow-x-auto pb-1">
+      <section className="py-5 sm:py-8 px-4 sm:px-6 border-b border-gray-100 sticky top-0 z-40 bg-white/95 backdrop-blur-sm">
+        <div className="max-w-6xl mx-auto flex items-center gap-2 sm:gap-3 overflow-x-auto pb-1 scrollbar-hide">
           <FiFilter className="text-gray-400 text-sm flex-shrink-0" />
           {categories.map((cat) => (
             <button
@@ -123,8 +123,8 @@ export default function PackagesPage() {
       </section>
 
       {/* ── Packages Grid ── */}
-      <section className="py-12 px-6">
-        <div className="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <section className="py-8 sm:py-12 px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
           {filtered.map((pkg) => (
             <div
               key={pkg.name}
@@ -279,7 +279,7 @@ export default function PackagesPage() {
       </section>
 
       {/* ── What's Included ── */}
-      <section className="bg-orange-50 py-16 px-6">
+      <section className="bg-orange-50 py-10 sm:py-16 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
           <p
             className="text-center text-orange-500 text-sm font-semibold tracking-widest uppercase mb-1"
@@ -293,7 +293,7 @@ export default function PackagesPage() {
           >
             What You <span className="text-orange-500">Get</span>
           </h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {[
               {
                 icon: "🏨",
@@ -340,7 +340,7 @@ export default function PackagesPage() {
       </section>
 
       {/* ── CTA Banner ── */}
-      <section className="relative py-20 px-6">
+      <section className="relative py-14 sm:py-20 px-4 sm:px-6">
         <img
           src="https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1400&q=80"
           alt="CTA background"

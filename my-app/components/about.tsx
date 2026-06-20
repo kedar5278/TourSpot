@@ -58,18 +58,18 @@ export default function AboutPage() {
     return (
         <div className="font-sans text-gray-800 bg-white">
             {/* ── Hero ── */}
-            <section className="relative h-60 md:h-100">
+            <section className="relative h-48 sm:h-64 md:h-96">
                 <img
                     src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80"
                     alt="Mountain landscape"
                     className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent" />
-                <div className="absolute bottom-8 left-8">
-                    <h1 className="text-white text-4xl md:text-5xl font-bold tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>About US</h1>
+                <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-4 sm:left-6 md:left-8">
+                    <h1 className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>About US</h1>
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-r to-transparent">
-                    <Link href="/" className="text-sm text-white font-semibold hover:text-orange-700 transition-colors absolute top-4 right-10" style={{ fontFamily: "'Playfair Display', serif" }}>
+                    <Link href="/" className="text-sm text-white font-semibold hover:text-orange-700 transition-colors absolute top-3 sm:top-4 right-4 sm:right-6 md:right-10" style={{ fontFamily: "'Playfair Display', serif" }}>
                         <button className="border border-white text-white px-3 py-1 rounded text-sm font-semibold font-medium hover:text-orange-700 hover:border-orange-700 transition-colors">
                             Back to Home
                         </button>
@@ -78,7 +78,7 @@ export default function AboutPage() {
             </section>
 
             {/* ── Who We Are ── */}
-            <section className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-10 items-center">
+            <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16 grid md:grid-cols-2 gap-6 sm:gap-10 items-center">
                 <div>
                     <h2 className="text-2xl font-bold text-orange-500 mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>Who We Are</h2>
                     <p className="text-gray-600 leading-relaxed mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
@@ -97,14 +97,14 @@ export default function AboutPage() {
                     <img
                         src="https://images.unsplash.com/photo-1527631746610-bca00a040d60?w=800&q=80"
                         alt="Group of travellers celebrating on a mountain"
-                        className="w-full h-100 object-cover"
+                        className="w-full h-56 sm:h-72 md:h-80 lg:h-96 object-cover"
                     />
                 </div>
             </section>
 
             {/* ── Mission & Vision ── */}
-            <section className="bg-orange-50 py-16">
-                <div className="max-w-6xl mx-auto px-6">
+            <section className="bg-orange-50 py-10 sm:py-16">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6">
                     <p className="text-center text-orange-500 text-sm font-semibold tracking-widest uppercase mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
                         Our Mission
                     </p>
@@ -131,8 +131,8 @@ export default function AboutPage() {
             </section>
 
             {/* ── Our Values ── */}
-            <section className="py-16">
-                <div className="max-w-6xl mx-auto px-6">
+            <section className="py-10 sm:py-16">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6">
                     <p className="text-center text-gray-500 text-sm font-semibold tracking-widest uppercase mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
                         Our Values
                     </p>

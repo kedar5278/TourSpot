@@ -45,20 +45,20 @@ const features = [
 
 export default function WhyChooseUs() {
   return (
-    <section className="py-16 px-4 md:px-10 bg-white">
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-12 items-center">
+    <section className="py-10 sm:py-16 px-4 sm:px-6 md:px-10 bg-white">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-8 md:gap-12 items-start md:items-center">
         {/* Left text */}
-        <div className="md:w-1/3">
+        <div className="w-full md:w-1/3">
           <p className="text-orange-500 font-semibold text-sm mb-2 uppercase tracking-widest" style={{ fontFamily: "'Playfair Display', serif" }}>
             Why Choose Us
           </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 leading-snug" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 leading-snug" style={{ fontFamily: "'Playfair Display', serif" }}>
             Travel Made Easy With US
           </h2>
         </div>
 
         {/* Right grid */}
-        <div className="md:w-2/3 grid grid-cols-2 gap-6">
+        <div className="w-full md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           {features.map((f) => (
             <div key={f.title} className="feature-card flex items-start gap-4">
               <div className={`feature-icon ${f.bg} p-3 rounded-xl flex-shrink-0 shadow-sm`}>

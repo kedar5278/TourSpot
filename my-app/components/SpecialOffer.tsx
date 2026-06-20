@@ -41,19 +41,22 @@ const offers = [
 
 export default function SpecialOffers() {
   return (
-    <section className="py-14 px-4 md:px-10 bg-gray-50">
-      <h2 className="text-4xl font-bold text-gray-800 mb-8" style={{ fontFamily: "'Playfair Display', serif" }}>
+    <section className="py-10 sm:py-14 px-4 sm:px-6 md:px-10 bg-gray-50">
+      <h2
+        className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-6 sm:mb-8"
+        style={{ fontFamily: "'Playfair Display', serif" }}
+      >
         Special Offers
       </h2>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {offers.map((offer) => (
           <Link
             key={offer.name}
             href={`/packages/${offer.slug}`}
-            className="card-hover rounded-4xl w-80 h-80 overflow-hidden shadow-md cursor-pointer group relative block"
+            className="card-hover rounded-2xl overflow-hidden shadow-md cursor-pointer group relative block"
           >
             {/* Image section */}
-            <div className="relative h-44 md:h-55 overflow-hidden">
+            <div className="relative h-48 sm:h-44 md:h-52 overflow-hidden">
               <img
                 src={offer.image}
                 alt={offer.name}
@@ -75,19 +78,19 @@ export default function SpecialOffers() {
               </h3>
             </div>
 
-            {/* White info panel — original design */}
+            {/* White info panel */}
             <div className="p-3 bg-white">
-              <p className="text-xl text-gray-500 flex items-center gap-1" style={{ fontFamily: "'Playfair Display', serif" }}>
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+              <p className="text-sm sm:text-base text-gray-500 flex items-center gap-1" style={{ fontFamily: "'Playfair Display', serif" }}>
+                <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9z" />
                 </svg>
                 {offer.location}
               </p>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-xl font-bold text-gray-800" style={{ fontFamily: "'Playfair Display', serif" }}>
+                <span className="text-base sm:text-lg font-bold text-gray-800" style={{ fontFamily: "'Playfair Display', serif" }}>
                   {offer.price}
                 </span>
-                <span className="text-xl text-orange-500 line-through" style={{ fontFamily: "'Playfair Display', serif" }}>
+                <span className="text-sm sm:text-base text-orange-500 line-through" style={{ fontFamily: "'Playfair Display', serif" }}>
                   {offer.originalPrice}
                 </span>
               </div>

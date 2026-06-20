@@ -62,7 +62,7 @@ export default function PackageDetail({ slug }: { slug: string }) {
   return (
     <div className="font-sans text-gray-800 bg-white">
       {/* ── Hero Gallery ── */}
-      <section className="relative h-72 md:h-110">
+      <section className="relative h-56 sm:h-72 md:h-110">
         <img
           src={pkg.gallery[activeImg]}
           alt={pkg.name}
@@ -71,12 +71,12 @@ export default function PackageDetail({ slug }: { slug: string }) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/30" />
 
         {/* Gallery thumbnails */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2">
           {pkg.gallery.map((img, i) => (
             <button
               key={i}
               onClick={() => setActiveImg(i)}
-              className={`w-16 h-10 rounded-lg overflow-hidden border-2 transition-all ${
+              className={`w-12 sm:w-16 h-8 sm:h-10 rounded-lg overflow-hidden border-2 transition-all ${
                 i === activeImg
                   ? "border-orange-500 scale-110"
                   : "border-white/40 opacity-70 hover:opacity-100"
@@ -170,11 +170,11 @@ export default function PackageDetail({ slug }: { slug: string }) {
       </nav>
 
       {/* ── Main Content ── */}
-      <section className="max-w-6xl mx-auto px-6 py-12 grid lg:grid-cols-3 gap-10">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 grid lg:grid-cols-3 gap-6 sm:gap-10">
         {/* Left column — Details */}
         <div className="lg:col-span-2 space-y-10">
           {/* Quick Info */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             {[
               {
                 icon: <FiCalendar className="text-orange-500" />,
@@ -300,7 +300,7 @@ export default function PackageDetail({ slug }: { slug: string }) {
           </div>
 
           {/* Inclusions & Exclusions */}
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
             <div className="rounded-xl border border-green-100 bg-green-50/50 p-6">
               <h3
                 className="font-bold text-gray-800 mb-4 flex items-center gap-2"
@@ -353,7 +353,7 @@ export default function PackageDetail({ slug }: { slug: string }) {
             >
               Gallery
             </h2>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
               {pkg.gallery.map((img, i) => (
                 <button
                   key={i}
@@ -361,7 +361,7 @@ export default function PackageDetail({ slug }: { slug: string }) {
                     setActiveImg(i);
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
-                  className="card-hover rounded-xl overflow-hidden h-32 md:h-44"
+                  className="card-hover rounded-xl overflow-hidden h-28 sm:h-32 md:h-44"
                 >
                   <img
                     src={img}
@@ -473,7 +473,7 @@ export default function PackageDetail({ slug }: { slug: string }) {
 
       {/* ── Related Packages ── */}
       {related.length > 0 && (
-        <section className="bg-orange-50 py-16 px-6">
+        <section className="bg-orange-50 py-10 sm:py-16 px-4 sm:px-6">
           <div className="max-w-6xl mx-auto">
             <p
               className="text-center text-orange-500 text-sm font-semibold tracking-widest uppercase mb-1"
@@ -487,7 +487,7 @@ export default function PackageDetail({ slug }: { slug: string }) {
             >
               Similar <span className="text-orange-500">Packages</span>
             </h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
               {related.map((rp) => (
                 <Link href={`/packages/${rp.slug}`} key={rp.slug}>
                   <div className="card-hover group rounded-2xl overflow-hidden bg-white border border-orange-100 shadow-sm">
@@ -548,7 +548,7 @@ export default function PackageDetail({ slug }: { slug: string }) {
       )}
 
       {/* ── CTA Banner ── */}
-      <section className="relative py-16 px-6">
+      <section className="relative py-12 sm:py-16 px-4 sm:px-6">
         <img
           src="https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1400&q=80"
           alt="CTA"

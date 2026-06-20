@@ -126,14 +126,14 @@ export default function ServicesPage() {
   return (
     <div className="font-sans text-gray-800 bg-white">
       {/* ── Hero Banner ── */}
-      <section className="relative h-64 md:h-96">
+      <section className="relative h-48 sm:h-64 md:h-96">
         <img
           src="https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1400&q=80"
           alt="Travel services hero"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
-        <div className="absolute bottom-8 left-8 md:bottom-12 md:left-12">
+        <div className="absolute bottom-4 sm:bottom-8 left-4 sm:left-8 md:bottom-12 md:left-12">
           <p
             className="text-orange-400 text-sm font-semibold tracking-widest uppercase mb-2"
             style={{ fontFamily: "'Playfair Display', serif" }}
@@ -141,7 +141,7 @@ export default function ServicesPage() {
             What We Offer
           </p>
           <h1
-            className="text-white text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight"
+            className="text-white text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             Our Services
@@ -149,7 +149,7 @@ export default function ServicesPage() {
         </div>
         <Link
           href="/"
-          className="absolute top-3 right-4 md:right-10"
+          className="absolute top-3 sm:top-4 md:right-10 right-4"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
           <button className="border border-white text-white px-3 py-1 rounded text-sm font-semibold hover:text-orange-500 hover:border-orange-500 transition-colors">
@@ -159,7 +159,7 @@ export default function ServicesPage() {
       </section>
 
       {/* ── Intro Strip ── */}
-      <section className="bg-orange-50 py-10 px-6">
+      <section className="bg-orange-50 py-8 sm:py-10 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto text-center">
           <p
             className="text-gray-500 text-sm font-semibold tracking-widest uppercase mb-2"
@@ -186,9 +186,9 @@ export default function ServicesPage() {
       </section>
 
       {/* ── Services Grid ── */}
-      <section className="py-16 px-6">
+      <section className="py-10 sm:py-16 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
             {services.map((service) => (
               <div
                 key={service.title}
@@ -254,7 +254,7 @@ export default function ServicesPage() {
       </section>
 
       {/* ── How It Works ── */}
-      <section className="bg-orange-50 py-16 px-6">
+      <section className="bg-orange-50 py-10 sm:py-16 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
           <p
             className="text-center text-gray-500 text-sm font-semibold tracking-widest uppercase mb-1"
@@ -268,7 +268,7 @@ export default function ServicesPage() {
           >
             How It <span className="text-orange-500">Works</span>
           </h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {[
               {
                 step: "01",
@@ -322,7 +322,7 @@ export default function ServicesPage() {
       </section>
 
       {/* ── Why Choose TourSpot ── */}
-      <section className="py-16 px-6">
+      <section className="py-10 sm:py-16 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
           <p
             className="text-center text-orange-500 text-sm font-semibold tracking-widest uppercase mb-1"
@@ -331,12 +331,12 @@ export default function ServicesPage() {
             Why TourSpot
           </p>
           <h2
-            className="text-center text-3xl font-bold text-gray-800 mb-12"
+            className="text-center text-2xl sm:text-3xl font-bold text-gray-800 mb-8 sm:mb-12"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             Why Choose <span className="text-orange-500">TourSpot</span>
           </h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {whyUs.map((item) => (
               <div
                 key={item.title}
@@ -364,7 +364,7 @@ export default function ServicesPage() {
       </section>
 
       {/* ── CTA Banner ── */}
-      <section className="relative py-20 px-6">
+      <section className="relative py-14 sm:py-20 px-4 sm:px-6">
         <img
           src="https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1400&q=80"
           alt="CTA background"
