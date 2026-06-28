@@ -19,6 +19,8 @@ import {
   FiShare2,
   FiDownload,
 } from "react-icons/fi";
+import { useAuth, SignInButton } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 // ─── Component ────────────────────────────────────────────────────────────────────
 
@@ -59,6 +61,9 @@ export default function PackageDetail({ slug }: { slug: string }) {
     .filter((p) => p.category === pkg.category && p.slug !== pkg.slug)
     .slice(0, 3);
 
+  const { isSignedIn } = useAuth();
+  const router = useRouter();
+
   return (
     <div className="font-sans text-gray-800 bg-white">
       {/* ── Hero Gallery ── */}
@@ -76,11 +81,10 @@ export default function PackageDetail({ slug }: { slug: string }) {
             <button
               key={i}
               onClick={() => setActiveImg(i)}
-              className={`w-12 sm:w-16 h-8 sm:h-10 rounded-lg overflow-hidden border-2 transition-all ${
-                i === activeImg
-                  ? "border-orange-500 scale-110"
-                  : "border-white/40 opacity-70 hover:opacity-100"
-              }`}
+              className={`w-12 sm:w-16 h-8 sm:h-10 rounded-lg overflow-hidden border-2 transition-all ${i === activeImg
+                ? "border-orange-500 scale-110"
+                : "border-white/40 opacity-70 hover:opacity-100"
+                }`}
             >
               <img
                 src={img}
@@ -443,15 +447,13 @@ export default function PackageDetail({ slug }: { slug: string }) {
               </div>
 
               {/* Book Now */}
-              <Link href={`/packages/${pkg.slug}/book`}>
-                <button
-                  className="book-now-btn w-full inline-flex items-center justify-center gap-2 font-semibold text-sm border border-orange-500 text-orange-500 px-5 py-3 rounded-full"
-                  style={{ fontFamily: "'Playfair Display', serif" }}
-                >
-                  <span className="book-now-text">Book This Package</span>
-                  <FiArrowRight className="book-now-arrow text-base" />
-                </button>
-              </Link>
+              <button
+                className="book-now-btn w-full inline-flex items-center justify-center gap-2 font-semibold text-sm border border-orange-500 text-orange-500 px-5 py-3 rounded-full"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                <span className="book-now-text">Book This Package</span>
+                <FiArrowRight className="book-now-arrow text-base" />
+              </button>
 
               <Link href="/contact">
                 <button
