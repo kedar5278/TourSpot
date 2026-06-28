@@ -64,19 +64,6 @@ export default function PackageDetail({ slug }: { slug: string }) {
   const { isSignedIn } = useAuth();
   const router = useRouter();
 
-  const handleBookNow = () => {
-    if (!isSignedIn) {
-      router.push(
-        `/sign-in?redirect_url=${encodeURIComponent(
-          `/packages/${pkg.slug}/book`
-        )}`
-      );
-      return;
-    }
-
-    router.push(`/packages/${pkg.slug}/book`);
-  };
-
   return (
     <div className="font-sans text-gray-800 bg-white">
       {/* ── Hero Gallery ── */}
@@ -460,14 +447,15 @@ export default function PackageDetail({ slug }: { slug: string }) {
               </div>
 
               {/* Book Now */}
-              <button
-                onClick={handleBookNow}
-                className="book-now-btn w-full inline-flex items-center justify-center gap-2 font-semibold text-sm border border-orange-500 text-orange-500 px-5 py-3 rounded-full"
-                style={{ fontFamily: "'Playfair Display', serif" }}
-              >
-                <span className="book-now-text">Book This Package</span>
-                <FiArrowRight className="book-now-arrow text-base" />
-              </button>
+              <Link href={`/packages/${pkg.slug}/book`}>
+                <button
+                  className="book-now-btn w-full inline-flex items-center justify-center gap-2 font-semibold text-sm border border-orange-500 text-orange-500 px-5 py-3 rounded-full"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
+                  <span className="book-now-text">Book This Package</span>
+                  <FiArrowRight className="book-now-arrow text-base" />
+                </button>
+              </Link><br/><br/>
 
               <Link href="/contact">
                 <button
