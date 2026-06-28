@@ -264,7 +264,6 @@ export const allPackages: Package[] = [
     gallery: [
       "/packages_images/varnasi2.jpeg",
       "/packages_images/varanasi3.jpeg",
-      "",
     ],
     price: "₹4,999",
     originalPrice: "₹7,499",
