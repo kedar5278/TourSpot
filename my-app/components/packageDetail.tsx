@@ -460,7 +460,7 @@ export default function PackageDetail({ slug }: { slug: string }) {
                   <FiArrowRight className="book-now-arrow text-base" />
                 </button>
               ) : (
-                <SignInButton mode="modal">
+                <SignInButton mode="modal" forceRedirectUrl={`/packages/${pkg.slug}/book`}>
                   <button
                     className="book-now-btn w-full inline-flex items-center justify-center gap-2 font-semibold text-sm border border-orange-500 text-orange-500 px-5 py-3 rounded-full"
                     style={{ fontFamily: "'Playfair Display', serif" }}
