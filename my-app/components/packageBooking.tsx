@@ -1,0 +1,1172 @@
+"use client";
+
+import Link from "next/link";
+import React, { useState } from "react";
+import Footer from "./footer";
+import { allPackages } from "@/data/packages";
+import {
+  FiArrowLeft,
+  FiArrowRight,
+  FiCheckCircle,
+  FiCalendar,
+  FiUsers,
+  FiMail,
+  FiMapPin,
+  FiShield,
+  FiCreditCard,
+  FiStar,
+  FiClock,
+  FiHeart,
+  FiAlertCircle,
+  FiCheck,
+  FiXCircle,
+} from "react-icons/fi";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type Step = 1 | 2 | 3 | 4;
+
+interface TravelerInfo {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  pincode: string;
+}
+
+interface BookingState {
+  travelDate: string;
+  guests: number;
+  travelers: TravelerInfo[];
+  addOns: string[];
+  specialRequests: string;
+  paymentMethod: string;
+  cardNumber: string;
+  cardName: string;
+  cardExpiry: string;
+  cardCvv: string;
+  upiId: string;
+}
+
+const ADD_ONS = [
+  { id: "travel-insurance", label: "Travel Insurance", price: 499, icon: "🛡️" },
+  { id: "airport-pickup", label: "Airport Pickup", price: 799, icon: "🚖" },
+  { id: "guided-tour", label: "Professional Guide", price: 999, icon: "🧭" },
+  { id: "photography", label: "Trip Photography", price: 1499, icon: "📷" },
+  { id: "adventure-kit", label: "Adventure Kit", price: 599, icon: "🎒" },
+  { id: "luxury-upgrade", label: "Luxury Room Upgrade", price: 2499, icon: "⭐" },
+];
+
+const EMPTY_TRAVELER: TravelerInfo = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  phone: "",
+  address: "",
+  city: "",
+  state: "",
+  pincode: "",
+};
+
+// ─── Helper ───────────────────────────────────────────────────────────────────
+
+function parsePriceNumber(priceStr: string): number {
+  return parseInt(priceStr.replace(/[^0-9]/g, ""), 10) || 0;
+}
+
+// ─── Step Indicator ───────────────────────────────────────────────────────────
+
+function StepIndicator({ current }: { current: Step }) {
+  const steps = [
+    { num: 1, label: "Trip Details" },
+    { num: 2, label: "Travelers" },
+    { num: 3, label: "Add-ons" },
+    { num: 4, label: "Payment" },
+  ];
+  return (
+    <div className="flex items-center justify-center gap-0 mb-10">
+      {steps.map((s, i) => (
+        <React.Fragment key={s.num}>
+          <div className="flex flex-col items-center">
+            <div
+              className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
+                current > s.num
+                  ? "bg-green-500 text-white"
+                  : current === s.num
+                  ? "bg-orange-500 text-white shadow-lg shadow-orange-200"
+                  : "bg-gray-100 text-gray-400"
+              }`}
+            >
+              {current > s.num ? <FiCheck className="text-sm" /> : s.num}
+            </div>
+            <span
+              className={`mt-1.5 text-xs font-semibold hidden sm:block ${
+                current >= s.num ? "text-orange-500" : "text-gray-400"
+              }`}
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              {s.label}
+            </span>
+          </div>
+          {i < steps.length - 1 && (
+            <div
+              className={`h-0.5 w-12 sm:w-20 mx-1 transition-all duration-500 ${
+                current > s.num ? "bg-green-400" : "bg-gray-200"
+              }`}
+            />
+          )}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+}
+
+// ─── Summary Card ─────────────────────────────────────────────────────────────
+
+function SummaryCard({
+  pkg,
+  booking,
+}: {
+  pkg: NonNullable<ReturnType<typeof allPackages.find>>;
+  booking: BookingState;
+}) {
+  const base = parsePriceNumber(pkg.price) * booking.guests;
+  const addOnTotal = booking.addOns.reduce((sum, id) => {
+    const a = ADD_ONS.find((x) => x.id === id);
+    return sum + (a ? a.price * booking.guests : 0);
+  }, 0);
+  const taxes = Math.round((base + addOnTotal) * 0.05);
+  const total = base + addOnTotal + taxes;
+
+  return (
+    <div className="rounded-2xl border border-orange-100 bg-white shadow-md overflow-hidden sticky top-24">
+      <div className="relative h-36 overflow-hidden">
+        <img src={pkg.image} alt={pkg.name} className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+        <div className="absolute bottom-3 left-3">
+          <h3
+            className="text-white font-bold text-lg"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            {pkg.name}
+          </h3>
+          <p className="text-white/80 text-xs flex items-center gap-1">
+            <FiMapPin className="text-xs" /> {pkg.location}
+          </p>
+        </div>
+      </div>
+
+      <div className="p-5 space-y-3">
+        {booking.travelDate && (
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <FiCalendar className="text-orange-400 flex-shrink-0" />
+            <span style={{ fontFamily: "'Playfair Display', serif" }}>
+              {new Date(booking.travelDate).toLocaleDateString("en-IN", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
+            </span>
+          </div>
+        )}
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <FiUsers className="text-orange-400 flex-shrink-0" />
+          <span style={{ fontFamily: "'Playfair Display', serif" }}>
+            {booking.guests} {booking.guests === 1 ? "Guest" : "Guests"}
+          </span>
+        </div>
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <FiClock className="text-orange-400 flex-shrink-0" />
+          <span style={{ fontFamily: "'Playfair Display', serif" }}>{pkg.duration}</span>
+        </div>
+
+        <hr className="border-gray-100" />
+
+        <div className="space-y-2 text-sm">
+          <div className="flex justify-between text-gray-600">
+            <span style={{ fontFamily: "'Playfair Display', serif" }}>
+              {pkg.price} × {booking.guests} {booking.guests === 1 ? "guest" : "guests"}
+            </span>
+            <span style={{ fontFamily: "'Playfair Display', serif" }}>
+              ₹{base.toLocaleString("en-IN")}
+            </span>
+          </div>
+          {booking.addOns.length > 0 && (
+            <div className="flex justify-between text-gray-600">
+              <span style={{ fontFamily: "'Playfair Display', serif" }}>
+                Add-ons ({booking.addOns.length})
+              </span>
+              <span style={{ fontFamily: "'Playfair Display', serif" }}>
+                ₹{addOnTotal.toLocaleString("en-IN")}
+              </span>
+            </div>
+          )}
+          <div className="flex justify-between text-gray-500 text-xs">
+            <span style={{ fontFamily: "'Playfair Display', serif" }}>Taxes & fees (5%)</span>
+            <span style={{ fontFamily: "'Playfair Display', serif" }}>
+              ₹{taxes.toLocaleString("en-IN")}
+            </span>
+          </div>
+          <hr className="border-gray-100" />
+          <div className="flex justify-between font-bold text-gray-800 text-base">
+            <span style={{ fontFamily: "'Playfair Display', serif" }}>Total</span>
+            <span className="text-orange-500" style={{ fontFamily: "'Playfair Display', serif" }}>
+              ₹{total.toLocaleString("en-IN")}
+            </span>
+          </div>
+        </div>
+
+        <div className="pt-2 space-y-1.5">
+          {[
+            { icon: <FiShield className="text-green-500" />, text: "Secure Booking" },
+            { icon: <FiClock className="text-blue-500" />, text: "Free cancellation up to 48 hrs" },
+            { icon: <FiStar className="text-orange-400" />, text: `Rated ${pkg.rating}/5 by travelers` },
+          ].map((item) => (
+            <div key={item.text} className="flex items-center gap-2 text-xs text-gray-500">
+              {item.icon}
+              <span style={{ fontFamily: "'Playfair Display', serif" }}>{item.text}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Step 1 — Trip Details ─────────────────────────────────────────────────────
+
+function Step1({
+  booking,
+  pkg,
+  onChange,
+}: {
+  booking: BookingState;
+  pkg: NonNullable<ReturnType<typeof allPackages.find>>;
+  onChange: (k: keyof BookingState, v: BookingState[keyof BookingState]) => void;
+}) {
+  const today = new Date().toISOString().split("T")[0];
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2
+          className="text-2xl font-bold text-gray-800 mb-1"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          Trip Details
+        </h2>
+        <p className="text-gray-500 text-sm" style={{ fontFamily: "'Playfair Display', serif" }}>
+          Choose your travel date and the number of guests.
+        </p>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {[
+          { icon: <FiClock className="text-orange-400" />, text: pkg.duration },
+          { icon: <FiUsers className="text-orange-400" />, text: `${pkg.groupSize} guests max` },
+          { icon: <FiMapPin className="text-orange-400" />, text: pkg.location },
+        ].map((chip) => (
+          <div
+            key={chip.text}
+            className="flex items-center gap-1.5 bg-orange-50 border border-orange-100 text-orange-700 text-xs px-3 py-1.5 rounded-full"
+          >
+            {chip.icon}
+            <span style={{ fontFamily: "'Playfair Display', serif" }}>{chip.text}</span>
+          </div>
+        ))}
+      </div>
+
+      <div>
+        <label
+          className="block text-sm font-semibold text-gray-700 mb-2"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          Select Travel Date <span className="text-orange-500">*</span>
+        </label>
+        <div className="relative">
+          <FiCalendar className="absolute left-3 top-1/2 -translate-y-1/2 text-orange-400" />
+          <input
+            type="date"
+            min={today}
+            value={booking.travelDate}
+            onChange={(e) => onChange("travelDate", e.target.value)}
+            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm text-black focus:ring-2 focus:ring-orange-300 focus:border-orange-400 outline-none transition-all"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          />
+        </div>
+      </div>
+
+      <div>
+        <label
+          className="block text-sm font-semibold text-gray-700 mb-2"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          Number of Guests <span className="text-orange-500">*</span>
+        </label>
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => onChange("guests", Math.max(1, booking.guests - 1))}
+            className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:border-orange-400 hover:text-orange-500 transition-colors font-bold text-lg"
+          >
+            −
+          </button>
+          <div className="flex-1 text-center">
+            <span
+              className="text-3xl font-bold text-gray-800"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              {booking.guests}
+            </span>
+            <p className="text-xs text-gray-400" style={{ fontFamily: "'Playfair Display', serif" }}>
+              {booking.guests === 1 ? "Guest" : "Guests"}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => onChange("guests", Math.min(20, booking.guests + 1))}
+            className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:border-orange-400 hover:text-orange-500 transition-colors font-bold text-lg"
+          >
+            +
+          </button>
+        </div>
+        <p className="text-xs text-gray-400 mt-2 text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
+          Group size: {pkg.groupSize} guests
+        </p>
+      </div>
+
+      <div>
+        <label
+          className="block text-sm font-semibold text-gray-700 mb-2"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          Special Requests <span className="text-gray-400 font-normal">(optional)</span>
+        </label>
+        <textarea
+          rows={3}
+          value={booking.specialRequests}
+          onChange={(e) => onChange("specialRequests", e.target.value)}
+          placeholder="Dietary requirements, accessibility needs, special occasions..."
+          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-black focus:ring-2 focus:ring-orange-300 focus:border-orange-400 outline-none resize-none transition-all"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        />
+      </div>
+
+      <div className="rounded-xl bg-orange-50 border border-orange-100 p-4">
+        <h4
+          className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          <FiHeart className="text-orange-500" /> Package Highlights
+        </h4>
+        <div className="flex flex-wrap gap-2">
+          {pkg.highlights.map((h) => (
+            <span
+              key={h}
+              className="text-xs text-orange-700 bg-white border border-orange-100 px-3 py-1 rounded-full flex items-center gap-1"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              <FiCheckCircle className="text-orange-400 text-xs" /> {h}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Traveler Form ─────────────────────────────────────────────────────────────
+
+function TravelerForm({
+  index,
+  data,
+  onChange,
+}: {
+  index: number;
+  data: TravelerInfo;
+  onChange: (field: keyof TravelerInfo, val: string) => void;
+}) {
+  const [expanded, setExpanded] = useState(index === 0);
+
+  const fields: {
+    key: keyof TravelerInfo;
+    label: string;
+    type?: string;
+    placeholder: string;
+    required?: boolean;
+  }[] = [
+    { key: "firstName", label: "First Name", placeholder: "John", required: true },
+    { key: "lastName", label: "Last Name", placeholder: "Doe", required: true },
+    { key: "email", label: "Email", type: "email", placeholder: "john@example.com", required: true },
+    { key: "phone", label: "Phone", type: "tel", placeholder: "+91 98765 43210", required: true },
+    { key: "address", label: "Address", placeholder: "123 Street, Area" },
+    { key: "city", label: "City", placeholder: "Delhi" },
+    { key: "state", label: "State", placeholder: "Maharashtra" },
+    { key: "pincode", label: "Pin Code", placeholder: "400001" },
+  ];
+
+  return (
+    <div className="rounded-xl border border-gray-100 overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setExpanded(!expanded)}
+        className={`w-full flex items-center justify-between px-5 py-4 text-left transition-colors ${
+          expanded ? "bg-orange-50" : "bg-gray-50 hover:bg-orange-50/50"
+        }`}
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center text-sm font-bold">
+            {index + 1}
+          </div>
+          <div>
+            <p className="font-semibold text-gray-800 text-sm" style={{ fontFamily: "'Playfair Display', serif" }}>
+              {data.firstName || data.lastName
+                ? `${data.firstName} ${data.lastName}`.trim()
+                : `Traveler ${index + 1}`}
+            </p>
+            {index === 0 && (
+              <p className="text-xs text-orange-500" style={{ fontFamily: "'Playfair Display', serif" }}>
+                Primary Contact
+              </p>
+            )}
+          </div>
+        </div>
+        <span className="text-gray-400 text-lg">{expanded ? "−" : "+"}</span>
+      </button>
+
+      {expanded && (
+        <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {fields.map((f) => (
+            <div key={f.key} className={f.key === "address" ? "sm:col-span-2" : ""}>
+              <label
+                className="block text-xs font-semibold text-gray-600 mb-1.5"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                {f.label}
+                {f.required && <span className="text-orange-500"> *</span>}
+              </label>
+              <input
+                type={f.type || "text"}
+                placeholder={f.placeholder}
+                value={data[f.key]}
+                onChange={(e) => onChange(f.key, e.target.value)}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-black focus:ring-2 focus:ring-orange-300 focus:border-orange-400 outline-none transition-all"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Step 2 — Traveler Info ────────────────────────────────────────────────────
+
+function Step2({
+  booking,
+  onChange,
+}: {
+  booking: BookingState;
+  onChange: (k: keyof BookingState, v: BookingState[keyof BookingState]) => void;
+}) {
+  const updateTraveler = (idx: number, field: keyof TravelerInfo, val: string) => {
+    const updated = [...booking.travelers];
+    updated[idx] = { ...updated[idx], [field]: val };
+    onChange("travelers", updated);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2
+          className="text-2xl font-bold text-gray-800 mb-1"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          Traveler Information
+        </h2>
+        <p className="text-gray-500 text-sm" style={{ fontFamily: "'Playfair Display', serif" }}>
+          Please fill in details for all {booking.guests}{" "}
+          {booking.guests === 1 ? "traveler" : "travelers"}.
+        </p>
+      </div>
+
+      <div className="space-y-3">
+        {booking.travelers.map((t, i) => (
+          <TravelerForm
+            key={i}
+            index={i}
+            data={t}
+            onChange={(field, val) => updateTraveler(i, field, val)}
+          />
+        ))}
+      </div>
+
+      <div className="flex items-start gap-3 p-4 bg-blue-50 rounded-xl border border-blue-100">
+        <FiAlertCircle className="text-blue-500 mt-0.5 flex-shrink-0" />
+        <p className="text-xs text-blue-700" style={{ fontFamily: "'Playfair Display', serif" }}>
+          Please ensure all details match the traveler's government-issued ID. This information
+          will be used for all travel arrangements.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ─── Step 3 — Add-ons ─────────────────────────────────────────────────────────
+
+function Step3({
+  booking,
+  onChange,
+}: {
+  booking: BookingState;
+  onChange: (k: keyof BookingState, v: BookingState[keyof BookingState]) => void;
+}) {
+  const toggle = (id: string) => {
+    const updated = booking.addOns.includes(id)
+      ? booking.addOns.filter((x) => x !== id)
+      : [...booking.addOns, id];
+    onChange("addOns", updated);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2
+          className="text-2xl font-bold text-gray-800 mb-1"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          Enhance Your Trip
+        </h2>
+        <p className="text-gray-500 text-sm" style={{ fontFamily: "'Playfair Display', serif" }}>
+          Optional add-ons to make your journey even more memorable.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {ADD_ONS.map((addon) => {
+          const selected = booking.addOns.includes(addon.id);
+          return (
+            <button
+              key={addon.id}
+              type="button"
+              onClick={() => toggle(addon.id)}
+              className={`text-left rounded-xl border-2 p-4 transition-all duration-200 ${
+                selected
+                  ? "border-orange-500 bg-orange-50 shadow-md shadow-orange-100"
+                  : "border-gray-100 bg-white hover:border-orange-200 hover:shadow-sm"
+              }`}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl">{addon.icon}</span>
+                  <div>
+                    <p className="font-semibold text-gray-800 text-sm" style={{ fontFamily: "'Playfair Display', serif" }}>
+                      {addon.label}
+                    </p>
+                    <p className="text-orange-500 text-sm font-bold mt-0.5" style={{ fontFamily: "'Playfair Display', serif" }}>
+                      +₹{addon.price.toLocaleString("en-IN")} / person
+                    </p>
+                  </div>
+                </div>
+                <div
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                    selected ? "border-orange-500 bg-orange-500" : "border-gray-300"
+                  }`}
+                >
+                  {selected && <FiCheck className="text-white text-xs" />}
+                </div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {booking.addOns.length > 0 && (
+        <div className="rounded-xl bg-green-50 border border-green-100 p-4">
+          <p
+            className="text-sm text-green-700 font-semibold flex items-center gap-2"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            <FiCheckCircle className="text-green-500" />
+            {booking.addOns.length} add-on{booking.addOns.length > 1 ? "s" : ""} selected — Great
+            choice!
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Step 4 — Payment ─────────────────────────────────────────────────────────
+
+function Step4({
+  booking,
+  onChange,
+}: {
+  booking: BookingState;
+  onChange: (k: keyof BookingState, v: BookingState[keyof BookingState]) => void;
+}) {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2
+          className="text-2xl font-bold text-gray-800 mb-1"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          Payment
+        </h2>
+        <p className="text-gray-500 text-sm" style={{ fontFamily: "'Playfair Display', serif" }}>
+          Choose your preferred payment method to complete the booking.
+        </p>
+      </div>
+
+      <div className="flex gap-3 flex-wrap">
+        {[
+          { id: "card", label: "Credit / Debit Card", icon: <FiCreditCard /> },
+          { id: "upi", label: "UPI", icon: <span className="font-bold text-xs">₹</span> },
+          { id: "netbanking", label: "Net Banking", icon: <span className="text-xs">🏦</span> },
+        ].map((m) => (
+          <button
+            key={m.id}
+            type="button"
+            onClick={() => onChange("paymentMethod", m.id)}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border-2 text-sm font-semibold transition-all ${
+              booking.paymentMethod === m.id
+                ? "border-orange-500 bg-orange-50 text-orange-600"
+                : "border-gray-200 text-gray-600 hover:border-orange-200"
+            }`}
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            {m.icon} {m.label}
+          </button>
+        ))}
+      </div>
+
+      {booking.paymentMethod === "card" && (
+        <div className="space-y-4 p-5 rounded-xl border border-gray-100 bg-gray-50">
+          <div>
+            <label
+              className="block text-xs font-semibold text-gray-600 mb-1.5"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              Card Number
+            </label>
+            <input
+              type="text"
+              placeholder="1234 5678 9012 3456"
+              maxLength={19}
+              value={booking.cardNumber}
+              onChange={(e) =>
+                onChange(
+                  "cardNumber",
+                  e.target.value
+                    .replace(/\D/g, "")
+                    .replace(/(\d{4})(?=\d)/g, "$1 ")
+                    .trim()
+                )
+              }
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-black focus:ring-2 focus:ring-orange-300 focus:border-orange-400 outline-none bg-white"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            />
+          </div>
+          <div>
+            <label
+              className="block text-xs font-semibold text-gray-600 mb-1.5"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              Cardholder Name
+            </label>
+            <input
+              type="text"
+              placeholder="John Doe"
+              value={booking.cardName}
+              onChange={(e) => onChange("cardName", e.target.value)}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-black focus:ring-2 focus:ring-orange-300 focus:border-orange-400 outline-none bg-white"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label
+                className="block text-xs font-semibold text-gray-600 mb-1.5"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                Expiry Date
+              </label>
+              <input
+                type="text"
+                placeholder="MM / YY"
+                maxLength={7}
+                value={booking.cardExpiry}
+                onChange={(e) =>
+                  onChange(
+                    "cardExpiry",
+                    e.target.value
+                      .replace(/\D/g, "")
+                      .replace(/^(\d{2})(\d)/, "$1 / $2")
+                  )
+                }
+                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-black focus:ring-2 focus:ring-orange-300 focus:border-orange-400 outline-none bg-white"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              />
+            </div>
+            <div>
+              <label
+                className="block text-xs font-semibold text-gray-600 mb-1.5"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                CVV
+              </label>
+              <input
+                type="password"
+                placeholder="•••"
+                maxLength={4}
+                value={booking.cardCvv}
+                onChange={(e) =>
+                  onChange("cardCvv", e.target.value.replace(/\D/g, ""))
+                }
+                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-black focus:ring-2 focus:ring-orange-300 focus:border-orange-400 outline-none bg-white"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {booking.paymentMethod === "upi" && (
+        <div className="p-5 rounded-xl border border-gray-100 bg-gray-50">
+          <label
+            className="block text-xs font-semibold text-gray-600 mb-1.5"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            UPI ID
+          </label>
+          <input
+            type="text"
+            placeholder="yourname@upi"
+            value={booking.upiId}
+            onChange={(e) => onChange("upiId", e.target.value)}
+            className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-orange-300 focus:border-orange-400 outline-none bg-white"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          />
+        </div>
+      )}
+
+      {booking.paymentMethod === "netbanking" && (
+        <div className="p-5 rounded-xl border border-gray-100 bg-gray-50">
+          <label
+            className="block text-xs font-semibold text-gray-600 mb-1.5"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            Select Bank
+          </label>
+          <select
+            className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-orange-300 focus:border-orange-400 outline-none bg-white"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            <option value="">-- Select your bank --</option>
+            {[
+              "State Bank of India",
+              "HDFC Bank",
+              "ICICI Bank",
+              "Axis Bank",
+              "Kotak Bank",
+              "Punjab National Bank",
+            ].map((b) => (
+              <option key={b} value={b}>
+                {b}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      <div className="flex items-start gap-3 p-4 bg-green-50 rounded-xl border border-green-100">
+        <FiShield className="text-green-500 mt-0.5 flex-shrink-0" />
+        <p className="text-xs text-green-700" style={{ fontFamily: "'Playfair Display', serif" }}>
+          Your payment is secured with 256-bit SSL encryption. We never store your card details
+          on our servers.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ─── Success Screen ────────────────────────────────────────────────────────────
+
+function SuccessScreen({
+  pkg,
+  booking,
+}: {
+  pkg: NonNullable<ReturnType<typeof allPackages.find>>;
+  booking: BookingState;
+}) {
+  const base = parsePriceNumber(pkg.price) * booking.guests;
+  const addOnTotal = booking.addOns.reduce((sum, id) => {
+    const a = ADD_ONS.find((x) => x.id === id);
+    return sum + (a ? a.price * booking.guests : 0);
+  }, 0);
+  const taxes = Math.round((base + addOnTotal) * 0.05);
+  const total = base + addOnTotal + taxes;
+  const bookingId = `TS${Date.now().toString().slice(-8).toUpperCase()}`;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex items-center justify-center px-4 py-16">
+      <div className="max-w-lg w-full">
+        <div className="text-center mb-8">
+          <div className="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-200">
+            <FiCheckCircle className="text-white text-4xl" />
+          </div>
+          <h1
+            className="text-3xl font-bold text-gray-800 mb-2"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            Booking Confirmed! 🎉
+          </h1>
+          <p className="text-gray-500 text-sm" style={{ fontFamily: "'Playfair Display', serif" }}>
+            Your adventure is booked. Get ready for an amazing journey!
+          </p>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+          <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-5">
+            <div className="flex items-center justify-between text-white">
+              <div>
+                <p className="text-xs opacity-80" style={{ fontFamily: "'Playfair Display', serif" }}>
+                  Booking ID
+                </p>
+                <p
+                  className="text-xl font-bold tracking-wider"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
+                  #{bookingId}
+                </p>
+              </div>
+              <FiCheckCircle className="text-3xl opacity-90" />
+            </div>
+          </div>
+
+          <div className="p-6 space-y-4">
+            <div className="flex items-center gap-4">
+              <img
+                src={pkg.image}
+                alt={pkg.name}
+                className="w-16 h-16 rounded-xl object-cover"
+              />
+              <div>
+                <h3
+                  className="font-bold text-gray-800"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
+                  {pkg.name}
+                </h3>
+                <p className="text-xs text-gray-500 flex items-center gap-1" style={{ fontFamily: "'Playfair Display', serif" }}>
+                  <FiMapPin className="text-xs" /> {pkg.location}
+                </p>
+              </div>
+            </div>
+
+            <hr className="border-gray-100" />
+
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              {[
+                {
+                  label: "Travel Date",
+                  value: booking.travelDate
+                    ? new Date(booking.travelDate).toLocaleDateString("en-IN", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })
+                    : "—",
+                },
+                {
+                  label: "Guests",
+                  value: `${booking.guests} ${booking.guests === 1 ? "Person" : "Persons"}`,
+                },
+                { label: "Duration", value: pkg.duration },
+                {
+                  label: "Primary Contact",
+                  value:
+                    booking.travelers[0]?.firstName || booking.travelers[0]?.lastName
+                      ? `${booking.travelers[0].firstName} ${booking.travelers[0].lastName}`.trim()
+                      : "—",
+                },
+              ].map((item) => (
+                <div key={item.label}>
+                  <p className="text-xs text-gray-400" style={{ fontFamily: "'Playfair Display', serif" }}>
+                    {item.label}
+                  </p>
+                  <p className="font-semibold text-gray-800" style={{ fontFamily: "'Playfair Display', serif" }}>
+                    {item.value}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <hr className="border-gray-100" />
+
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600 font-semibold" style={{ fontFamily: "'Playfair Display', serif" }}>
+                Total Paid
+              </span>
+              <span
+                className="text-2xl font-bold text-orange-500"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                ₹{total.toLocaleString("en-IN")}
+              </span>
+            </div>
+
+            {booking.travelers[0]?.email && (
+              <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg text-xs text-blue-700 border border-blue-100">
+                <FiMail className="flex-shrink-0" />
+                <span style={{ fontFamily: "'Playfair Display', serif" }}>
+                  Confirmation sent to{" "}
+                  <span className="font-semibold">{booking.travelers[0].email}</span>
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3 mt-6">
+          <Link href="/packages" className="flex-1">
+            <button
+              className="w-full btn-pro bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-3 rounded-full text-sm"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              Explore More Packages
+            </button>
+          </Link>
+          <Link href="/" className="flex-1">
+            <button
+              className="w-full border border-gray-200 text-gray-600 font-semibold px-6 py-3 rounded-full text-sm hover:border-orange-400 hover:text-orange-500 transition-colors"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              Back to Home
+            </button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Component ────────────────────────────────────────────────────────────
+
+export default function PackageBooking({ slug }: { slug: string }) {
+  const pkg = allPackages.find((p) => p.slug === slug);
+  const [step, setStep] = useState<Step>(1);
+  const [submitted, setSubmitted] = useState(false);
+  const [booking, setBooking] = useState<BookingState>({
+    travelDate: "",
+    guests: 2,
+    travelers: [{ ...EMPTY_TRAVELER }, { ...EMPTY_TRAVELER }],
+    addOns: [],
+    specialRequests: "",
+    paymentMethod: "card",
+    cardNumber: "",
+    cardName: "",
+    cardExpiry: "",
+    cardCvv: "",
+    upiId: "",
+  });
+
+  const handleChange = (
+    key: keyof BookingState,
+    value: BookingState[keyof BookingState]
+  ) => {
+    setBooking((prev) => {
+      const next = { ...prev, [key]: value };
+      if (key === "guests") {
+        const g = value as number;
+        const curr = prev.travelers;
+        if (g > curr.length) {
+          next.travelers = [
+            ...curr,
+            ...Array.from({ length: g - curr.length }, () => ({ ...EMPTY_TRAVELER })),
+          ];
+        } else {
+          next.travelers = curr.slice(0, g);
+        }
+      }
+      return next;
+    });
+  };
+
+  if (!pkg) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white px-6">
+        <FiXCircle className="text-orange-500 text-5xl mb-4" />
+        <h1
+          className="text-3xl font-bold text-gray-800 mb-2"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          Package Not Found
+        </h1>
+        <p className="text-gray-500 mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
+          The package you're trying to book doesn't exist.
+        </p>
+        <Link href="/packages">
+          <button
+            className="btn-pro bg-orange-500 hover:bg-orange-600 text-white font-semibold px-8 py-3 rounded-full text-sm"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            Browse All Packages
+          </button>
+        </Link>
+      </div>
+    );
+  }
+
+  if (submitted) {
+    return <SuccessScreen pkg={pkg} booking={booking} />;
+  }
+
+  const canProceed = () => {
+    if (step === 1) return !!booking.travelDate && booking.guests > 0;
+    if (step === 2) {
+      return booking.travelers.every(
+        (t) => t.firstName && t.lastName && t.email && t.phone
+      );
+    }
+    if (step === 3) return true;
+    if (step === 4) {
+      if (booking.paymentMethod === "card") {
+        return (
+          booking.cardNumber.replace(/\s/g, "").length === 16 &&
+          !!booking.cardName &&
+          booking.cardExpiry.length >= 7 &&
+          booking.cardCvv.length >= 3
+        );
+      }
+      if (booking.paymentMethod === "upi") return !!booking.upiId;
+      return true;
+    }
+    return true;
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 font-sans">
+      {/* Top bar */}
+      <div className="bg-white border-b border-gray-100 sticky top-0 z-30 shadow-sm">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+          <Link
+            href={`/packages/${slug}`}
+            className="flex items-center gap-2 text-sm text-gray-600 hover:text-orange-500 transition-colors font-semibold"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            <FiArrowLeft /> Back to Package
+          </Link>
+          <h1
+            className="text-base font-bold text-gray-800 hidden sm:block"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            Book <span className="text-orange-500">{pkg.name}</span>
+          </h1>
+          <div
+            className="text-xs text-gray-400 flex items-center gap-1"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            <FiShield className="text-green-500" /> Secure Booking
+          </div>
+        </div>
+      </div>
+
+      {/* Hero strip */}
+      <div className="relative h-32 sm:h-40 overflow-hidden">
+        <img
+          src={pkg.gallery[0] || pkg.image}
+          alt={pkg.name}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/30" />
+        <div className="absolute inset-0 flex items-center px-6 sm:px-10">
+          <div>
+            <p
+              className="text-orange-300 text-xs font-semibold tracking-widest uppercase mb-1"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              You're booking
+            </p>
+            <h2
+              className="text-white text-2xl sm:text-3xl font-bold"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              {pkg.name}
+            </h2>
+            <p
+              className="text-white/70 text-xs mt-1 flex items-center gap-1"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              <FiMapPin className="text-xs" /> {pkg.location} &nbsp;·&nbsp; {pkg.duration}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Main layout */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 grid lg:grid-cols-3 gap-6 sm:gap-10">
+        {/* Form column */}
+        <div className="lg:col-span-2">
+          <StepIndicator current={step} />
+
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
+            {step === 1 && <Step1 booking={booking} pkg={pkg} onChange={handleChange} />}
+            {step === 2 && <Step2 booking={booking} onChange={handleChange} />}
+            {step === 3 && <Step3 booking={booking} onChange={handleChange} />}
+            {step === 4 && <Step4 booking={booking} onChange={handleChange} />}
+
+            {/* Navigation */}
+            <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-100">
+              {step > 1 ? (
+                <button
+                  type="button"
+                  onClick={() => setStep((s) => (s - 1) as Step)}
+                  className="flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-orange-500 transition-colors"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
+                  <FiArrowLeft /> Previous
+                </button>
+              ) : (
+                <div />
+              )}
+
+              {step < 4 ? (
+                <button
+                  type="button"
+                  disabled={!canProceed()}
+                  onClick={() => setStep((s) => (s + 1) as Step)}
+                  className="btn-pro flex items-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-200 disabled:cursor-not-allowed text-white font-semibold px-8 py-3 rounded-full text-sm transition-colors"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
+                  Continue <FiArrowRight />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  disabled={!canProceed()}
+                  onClick={() => setSubmitted(true)}
+                  className="btn-pro flex items-center gap-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-200 disabled:cursor-not-allowed text-white font-semibold px-8 py-3 rounded-full text-sm transition-colors shadow-lg shadow-green-200"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
+                  Confirm & Pay <FiCheckCircle />
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Summary column */}
+        <div className="lg:col-span-1">
+          <SummaryCard pkg={pkg} booking={booking} />
+        </div>
+      </div>
+    </div>
+  );
+}

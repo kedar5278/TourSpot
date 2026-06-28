@@ -62,13 +62,13 @@ export default function Navbar() {
           <div className="flex items-center gap-3 ml-6">
             <Show when="signed-out">
               <SignInButton mode="modal">
-                <button className="px-4 py-2 border border-white rounded-lg text-white hover:bg-white hover:text-black transition">
+                <button className="px-3 py-1 border border-white rounded-lg text-white hover:bg-white hover:text-black transition" style={{ fontFamily: "'Playfair Display', serif" }}>
                   Sign In
                 </button>
               </SignInButton>
 
               <SignUpButton mode="modal">
-                <button className="px-4 py-2 bg-orange-500 rounded-lg text-white hover:bg-orange-600 transition">
+                <button className="px-3 py-1 bg-orange-500 rounded-lg text-white hover:bg-orange-600 transition" style={{ fontFamily: "'Playfair Display', serif" }}>
                   Sign Up
                 </button>
               </SignUpButton>
@@ -123,13 +123,13 @@ export default function Navbar() {
           <div className="flex flex-col gap-3 p-6">
             <Show when="signed-out">
               <SignInButton mode="modal">
-                <button className="w-full border border-white rounded-lg py-2 text-white">
+                <button className="w-full border border-white rounded-lg py-2 text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
                   Sign In
                 </button>
               </SignInButton>
 
               <SignUpButton mode="modal">
-                <button className="w-full bg-orange-500 rounded-lg py-2 text-white">
+                <button className="w-full bg-orange-500 rounded-lg py-2 text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
                   Sign Up
                 </button>
               </SignUpButton>
