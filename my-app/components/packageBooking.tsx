@@ -24,7 +24,7 @@ import {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type Step = 1 | 2 | 3 ;
+type Step = 1 | 2 | 3;
 
 interface TravelerInfo {
   firstName: string;
@@ -91,20 +91,18 @@ function StepIndicator({ current }: { current: Step }) {
         <React.Fragment key={s.num}>
           <div className="flex flex-col items-center">
             <div
-              className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
-                current > s.num
-                  ? "bg-green-500 text-white"
-                  : current === s.num
+              className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${current > s.num
+                ? "bg-green-500 text-white"
+                : current === s.num
                   ? "bg-orange-500 text-white shadow-lg shadow-orange-200"
                   : "bg-gray-100 text-gray-400"
-              }`}
+                }`}
             >
               {current > s.num ? <FiCheck className="text-sm" /> : s.num}
             </div>
             <span
-              className={`mt-1.5 text-xs font-semibold hidden sm:block ${
-                current >= s.num ? "text-orange-500" : "text-gray-400"
-              }`}
+              className={`mt-1.5 text-xs font-semibold hidden sm:block ${current >= s.num ? "text-orange-500" : "text-gray-400"
+                }`}
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
               {s.label}
@@ -112,9 +110,8 @@ function StepIndicator({ current }: { current: Step }) {
           </div>
           {i < steps.length - 1 && (
             <div
-              className={`h-0.5 w-12 sm:w-20 mx-1 transition-all duration-500 ${
-                current > s.num ? "bg-green-400" : "bg-gray-200"
-              }`}
+              className={`h-0.5 w-12 sm:w-20 mx-1 transition-all duration-500 ${current > s.num ? "bg-green-400" : "bg-gray-200"
+                }`}
             />
           )}
         </React.Fragment>
@@ -397,24 +394,23 @@ function TravelerForm({
     placeholder: string;
     required?: boolean;
   }[] = [
-    { key: "firstName", label: "First Name", placeholder: "John", required: true },
-    { key: "lastName", label: "Last Name", placeholder: "Doe", required: true },
-    { key: "email", label: "Email", type: "email", placeholder: "john@example.com", required: true },
-    { key: "phone", label: "Phone", type: "tel", placeholder: "+91 98765 43210", required: true },
-    { key: "address", label: "Address", placeholder: "123 Street, Area" },
-    { key: "city", label: "City", placeholder: "Delhi" },
-    { key: "state", label: "State", placeholder: "Maharashtra" },
-    { key: "pincode", label: "Pin Code", placeholder: "400001" },
-  ];
+      { key: "firstName", label: "First Name", placeholder: "John", required: true },
+      { key: "lastName", label: "Last Name", placeholder: "Doe", required: true },
+      { key: "email", label: "Email", type: "email", placeholder: "john@example.com", required: true },
+      { key: "phone", label: "Phone", type: "tel", placeholder: "+91 98765 43210", required: true },
+      { key: "address", label: "Address", placeholder: "123 Street, Area" },
+      { key: "city", label: "City", placeholder: "Delhi" },
+      { key: "state", label: "State", placeholder: "Maharashtra" },
+      { key: "pincode", label: "Pin Code", placeholder: "400001" },
+    ];
 
   return (
     <div className="rounded-xl border border-gray-100 overflow-hidden">
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
-        className={`w-full flex items-center justify-between px-5 py-4 text-left transition-colors ${
-          expanded ? "bg-orange-50" : "bg-gray-50 hover:bg-orange-50/50"
-        }`}
+        className={`w-full flex items-center justify-between px-5 py-4 text-left transition-colors ${expanded ? "bg-orange-50" : "bg-gray-50 hover:bg-orange-50/50"
+          }`}
       >
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center text-sm font-bold">
@@ -553,11 +549,10 @@ function Step3({
               key={addon.id}
               type="button"
               onClick={() => toggle(addon.id)}
-              className={`text-left rounded-xl border-2 p-4 transition-all duration-200 ${
-                selected
-                  ? "border-orange-500 bg-orange-50 shadow-md shadow-orange-100"
-                  : "border-gray-100 bg-white hover:border-orange-200 hover:shadow-sm"
-              }`}
+              className={`text-left rounded-xl border-2 p-4 transition-all duration-200 ${selected
+                ? "border-orange-500 bg-orange-50 shadow-md shadow-orange-100"
+                : "border-gray-100 bg-white hover:border-orange-200 hover:shadow-sm"
+                }`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3">
@@ -572,9 +567,8 @@ function Step3({
                   </div>
                 </div>
                 <div
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
-                    selected ? "border-orange-500 bg-orange-500" : "border-gray-300"
-                  }`}
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${selected ? "border-orange-500 bg-orange-500" : "border-gray-300"
+                    }`}
                 >
                   {selected && <FiCheck className="text-white text-xs" />}
                 </div>
@@ -682,10 +676,10 @@ function SuccessScreen({
                   label: "Travel Date",
                   value: booking.travelDate
                     ? new Date(booking.travelDate).toLocaleDateString("en-IN", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })
                     : "—",
                 },
                 {
@@ -802,6 +796,50 @@ export default function PackageBooking({ slug }: { slug: string }) {
       return next;
     });
   };
+
+
+  const handleBooking = async () => {
+    if (!pkg) return;
+
+    const base = parsePriceNumber(pkg.price) * booking.guests;
+    const addOnTotal = booking.addOns.reduce((sum, id) => {
+      const a = ADD_ONS.find((x) => x.id === id);
+      return sum + (a ? a.price * booking.guests : 0);
+    }, 0);
+    const taxes = Math.round((base + addOnTotal) * 0.05);
+    const total = base + addOnTotal + taxes;
+
+    const options = {
+      key: "rzp_test_T7RTKPxEimUNbD", // 👈 paste your Key ID directly here
+      amount: total * 100, // in paise
+      currency: "INR",
+      name: "TourSpot",
+      description: pkg.name,
+      prefill: {
+        name: `${booking.travelers[0]?.firstName} ${booking.travelers[0]?.lastName}`,
+        email: booking.travelers[0]?.email,
+        contact: booking.travelers[0]?.phone,
+      },
+      theme: { color: "#f97316" },
+      handler: function (response: any) {
+        // payment successful — no verification needed without backend
+        console.log("Payment success:", response);
+        setSubmitted(true);
+      },
+    };
+
+    const rzp = new (window as any).Razorpay(options);
+    rzp.on("payment.failed", (response: any) => {
+      console.error("Payment failed reason:", response.error); // 👈 add this
+      alert("Payment failed: " + response.error.description);
+    });
+    rzp.open();
+  };
+
+  const addOnTotal = booking.addOns.reduce((sum, id) => {
+    const addon = ADD_ONS.find((a) => a.id === id);
+    return sum + (addon ? addon.price * booking.guests : 0);
+  }, 0);
 
   if (!pkg) {
     return (
@@ -925,6 +963,7 @@ export default function PackageBooking({ slug }: { slug: string }) {
             {step === 2 && <Step2 booking={booking} onChange={handleChange} />}
             {step === 3 && <Step3 booking={booking} onChange={handleChange} />}
 
+
             {/* Navigation */}
             <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-100">
               {step > 1 ? (
@@ -940,7 +979,7 @@ export default function PackageBooking({ slug }: { slug: string }) {
                 <div />
               )}
 
-              {step < 4 ? (
+              {step < 3 ? (
                 <button
                   type="button"
                   disabled={!canProceed()}
@@ -950,7 +989,16 @@ export default function PackageBooking({ slug }: { slug: string }) {
                 >
                   Continue <FiArrowRight />
                 </button>
-              ) : null}
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleBooking}
+                  className="btn-pro flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-3 rounded-full text-sm transition-colors"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
+                  <FiCreditCard /> Pay Now ₹
+                </button>
+              )}
             </div>
           </div>
         </div>

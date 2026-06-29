@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
+import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -36,7 +37,12 @@ export default function RootLayout({
         lang="en"
         className={`${geistSans.variable} ${geistMono.variable}`}
       >
-        <body>{children}</body>
+        <body>{children}
+          <Script
+            src="https://checkout.razorpay.com/v1/checkout.js"
+            strategy="beforeInteractive"
+          />
+        </body>
       </html>
     </ClerkProvider>
   );
