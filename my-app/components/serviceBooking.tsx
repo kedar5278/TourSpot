@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import React, { useState } from "react";
-import Footer from "./footer";
 import {
   FiArrowLeft,
   FiArrowRight,
@@ -487,7 +486,6 @@ export default function ServiceBooking({ slug }: { slug: string }) {
             Browse Services
           </button>
         </Link>
-        <Footer />
       </div>
     );
   }
@@ -500,7 +498,7 @@ export default function ServiceBooking({ slug }: { slug: string }) {
   if (submitted) {
     return (
       <div className="font-sans text-gray-800 bg-white">
-        <section className="min-h-[70vh] flex flex-col items-center justify-center px-6 text-center">
+        <section className="min-h-[100vh] flex flex-col items-center justify-center px-6 text-center">
           <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-6">
             <FiCheckCircle className="text-green-500 text-4xl" />
           </div>
@@ -542,7 +540,6 @@ export default function ServiceBooking({ slug }: { slug: string }) {
             </Link>
           </div>
         </section>
-        <Footer />
       </div>
     );
   }

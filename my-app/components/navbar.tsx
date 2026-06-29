@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Show,
   SignInButton,
@@ -16,6 +16,152 @@ const navLinks = [
   { name: "Services", href: "/services" },
   { name: "Contact Us", href: "/contact" },
 ];
+
+/** Shown when the user is NOT signed in — generic profile icon with a dropdown */
+function GuestProfileDropdown() {
+  const [dropOpen, setDropOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setDropOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setDropOpen((prev) => !prev)}
+        className="flex items-center text-white hover:text-orange-400 transition-colors duration-300 focus:outline-none"
+        title="Account"
+        aria-label="Open account menu"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-6 h-6"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <circle cx="12" cy="8" r="4" />
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+        </svg>
+      </button>
+
+      {/* Dropdown */}
+      {dropOpen && (
+        <div
+          className="absolute right-0 mt-3 w-48 rounded-2xl overflow-hidden shadow-2xl border border-white/10"
+          style={{
+            background: "linear-gradient(135deg, rgba(15,15,30,0.95) 0%, rgba(30,20,50,0.97) 100%)",
+            backdropFilter: "blur(20px)",
+            animation: "fadeSlideDown 0.18s ease",
+          }}
+        >
+          {/* Arrow pointer */}
+          <div
+            className="absolute -top-2 right-4 w-4 h-4 rotate-45 border-t border-l border-white/10"
+            style={{ background: "rgba(15,15,30,0.95)" }}
+          />
+
+          <div className="relative p-3 flex flex-col gap-2">
+            <SignInButton mode="modal">
+              <button
+                onClick={() => setDropOpen(false)}
+                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-white/90 hover:bg-white/10 hover:text-orange-400 transition-all duration-200 text-sm font-medium text-left"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                </svg>
+                Sign In
+              </button>
+            </SignInButton>
+
+            <div className="h-px bg-white/10 mx-2" />
+
+            <SignUpButton mode="modal">
+              <button
+                onClick={() => setDropOpen(false)}
+                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl bg-orange-500/90 hover:bg-orange-500 text-white transition-all duration-200 text-sm font-medium text-left"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+                Sign Up
+              </button>
+            </SignUpButton>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes fadeSlideDown {
+          from { opacity: 0; transform: translateY(-8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+/** Extracted as a top-level component to avoid hydration mismatch */
+function IconCluster({
+  mobile = false,
+  onClose,
+}: {
+  mobile?: boolean;
+  onClose?: () => void;
+}) {
+  return (
+    <div className={`flex items-center gap-5 ${mobile ? "p-6" : "ml-6"}`}>
+      {/* History Icon */}
+      <Link
+        href="/history"
+        onClick={onClose}
+        className="flex items-center text-white hover:text-orange-400 transition-colors duration-300"
+        title="Booking History"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-6 h-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </Link>
+
+      {/* Profile: dropdown for guests, UserButton for signed-in */}
+      <Show when="signed-out">
+        <GuestProfileDropdown />
+      </Show>
+      <Show when="signed-in">
+        <div className="flex items-center">
+          <UserButton
+            appearance={{
+              elements: {
+                avatarBox: "w-6 h-6",
+              },
+            }}
+          />
+        </div>
+      </Show>
+    </div>
+  );
+}
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -58,26 +204,7 @@ export default function Navbar() {
             ))}
           </ul>
 
-          {/* Clerk Authentication */}
-          <div className="flex items-center gap-3 ml-6">
-            <Show when="signed-out">
-              <SignInButton mode="modal">
-                <button className="px-3 py-1 border border-white rounded-lg text-white hover:bg-white hover:text-black transition" style={{ fontFamily: "'Playfair Display', serif" }}>
-                  Sign In
-                </button>
-              </SignInButton>
-
-              <SignUpButton mode="modal">
-                <button className="px-3 py-1 bg-orange-500 rounded-lg text-white hover:bg-orange-600 transition" style={{ fontFamily: "'Playfair Display', serif" }}>
-                  Sign Up
-                </button>
-              </SignUpButton>
-            </Show>
-
-            <Show when="signed-in">
-              <UserButton />
-            </Show>
-          </div>
+          <IconCluster />
         </div>
 
         {/* Mobile Toggle */}
@@ -119,26 +246,7 @@ export default function Navbar() {
             </Link>
           ))}
 
-          {/* Mobile Clerk */}
-          <div className="flex flex-col gap-3 p-6">
-            <Show when="signed-out">
-              <SignInButton mode="modal">
-                <button className="w-full border border-white rounded-lg py-2 text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
-                  Sign In
-                </button>
-              </SignInButton>
-
-              <SignUpButton mode="modal">
-                <button className="w-full bg-orange-500 rounded-lg py-2 text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
-                  Sign Up
-                </button>
-              </SignUpButton>
-            </Show>
-
-            <Show when="signed-in">
-              <UserButton />
-            </Show>
-          </div>
+          <IconCluster mobile onClose={() => setOpen(false)} />
         </div>
       </div>
     </nav>

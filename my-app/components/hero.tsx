@@ -19,7 +19,7 @@ export default function Hero() {
           className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
-          Explore The World With Us
+          Explore The India With Us
         </h1>
         <p
           className="text-white/80 text-sm sm:text-base md:text-lg mb-8 sm:mb-10"

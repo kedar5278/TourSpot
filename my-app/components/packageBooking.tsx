@@ -24,7 +24,7 @@ import {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type Step = 1 | 2 | 3 | 4;
+type Step = 1 | 2 | 3 ;
 
 interface TravelerInfo {
   firstName: string;
@@ -84,7 +84,6 @@ function StepIndicator({ current }: { current: Step }) {
     { num: 1, label: "Trip Details" },
     { num: 2, label: "Travelers" },
     { num: 3, label: "Add-ons" },
-    { num: 4, label: "Payment" },
   ];
   return (
     <div className="flex items-center justify-center gap-0 mb-10">
@@ -601,201 +600,6 @@ function Step3({
   );
 }
 
-// ─── Step 4 — Payment ─────────────────────────────────────────────────────────
-
-function Step4({
-  booking,
-  onChange,
-}: {
-  booking: BookingState;
-  onChange: (k: keyof BookingState, v: BookingState[keyof BookingState]) => void;
-}) {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h2
-          className="text-2xl font-bold text-gray-800 mb-1"
-          style={{ fontFamily: "'Playfair Display', serif" }}
-        >
-          Payment
-        </h2>
-        <p className="text-gray-500 text-sm" style={{ fontFamily: "'Playfair Display', serif" }}>
-          Choose your preferred payment method to complete the booking.
-        </p>
-      </div>
-
-      <div className="flex gap-3 flex-wrap">
-        {[
-          { id: "card", label: "Credit / Debit Card", icon: <FiCreditCard /> },
-          { id: "upi", label: "UPI", icon: <span className="font-bold text-xs">₹</span> },
-          { id: "netbanking", label: "Net Banking", icon: <span className="text-xs">🏦</span> },
-        ].map((m) => (
-          <button
-            key={m.id}
-            type="button"
-            onClick={() => onChange("paymentMethod", m.id)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border-2 text-sm font-semibold transition-all ${
-              booking.paymentMethod === m.id
-                ? "border-orange-500 bg-orange-50 text-orange-600"
-                : "border-gray-200 text-gray-600 hover:border-orange-200"
-            }`}
-            style={{ fontFamily: "'Playfair Display', serif" }}
-          >
-            {m.icon} {m.label}
-          </button>
-        ))}
-      </div>
-
-      {booking.paymentMethod === "card" && (
-        <div className="space-y-4 p-5 rounded-xl border border-gray-100 bg-gray-50">
-          <div>
-            <label
-              className="block text-xs font-semibold text-gray-600 mb-1.5"
-              style={{ fontFamily: "'Playfair Display', serif" }}
-            >
-              Card Number
-            </label>
-            <input
-              type="text"
-              placeholder="1234 5678 9012 3456"
-              maxLength={19}
-              value={booking.cardNumber}
-              onChange={(e) =>
-                onChange(
-                  "cardNumber",
-                  e.target.value
-                    .replace(/\D/g, "")
-                    .replace(/(\d{4})(?=\d)/g, "$1 ")
-                    .trim()
-                )
-              }
-              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-black focus:ring-2 focus:ring-orange-300 focus:border-orange-400 outline-none bg-white"
-              style={{ fontFamily: "'Playfair Display', serif" }}
-            />
-          </div>
-          <div>
-            <label
-              className="block text-xs font-semibold text-gray-600 mb-1.5"
-              style={{ fontFamily: "'Playfair Display', serif" }}
-            >
-              Cardholder Name
-            </label>
-            <input
-              type="text"
-              placeholder="John Doe"
-              value={booking.cardName}
-              onChange={(e) => onChange("cardName", e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-black focus:ring-2 focus:ring-orange-300 focus:border-orange-400 outline-none bg-white"
-              style={{ fontFamily: "'Playfair Display', serif" }}
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label
-                className="block text-xs font-semibold text-gray-600 mb-1.5"
-                style={{ fontFamily: "'Playfair Display', serif" }}
-              >
-                Expiry Date
-              </label>
-              <input
-                type="text"
-                placeholder="MM / YY"
-                maxLength={7}
-                value={booking.cardExpiry}
-                onChange={(e) =>
-                  onChange(
-                    "cardExpiry",
-                    e.target.value
-                      .replace(/\D/g, "")
-                      .replace(/^(\d{2})(\d)/, "$1 / $2")
-                  )
-                }
-                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-black focus:ring-2 focus:ring-orange-300 focus:border-orange-400 outline-none bg-white"
-                style={{ fontFamily: "'Playfair Display', serif" }}
-              />
-            </div>
-            <div>
-              <label
-                className="block text-xs font-semibold text-gray-600 mb-1.5"
-                style={{ fontFamily: "'Playfair Display', serif" }}
-              >
-                CVV
-              </label>
-              <input
-                type="password"
-                placeholder="•••"
-                maxLength={4}
-                value={booking.cardCvv}
-                onChange={(e) =>
-                  onChange("cardCvv", e.target.value.replace(/\D/g, ""))
-                }
-                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-black focus:ring-2 focus:ring-orange-300 focus:border-orange-400 outline-none bg-white"
-                style={{ fontFamily: "'Playfair Display', serif" }}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {booking.paymentMethod === "upi" && (
-        <div className="p-5 rounded-xl border border-gray-100 bg-gray-50">
-          <label
-            className="block text-xs font-semibold text-gray-600 mb-1.5"
-            style={{ fontFamily: "'Playfair Display', serif" }}
-          >
-            UPI ID
-          </label>
-          <input
-            type="text"
-            placeholder="yourname@upi"
-            value={booking.upiId}
-            onChange={(e) => onChange("upiId", e.target.value)}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-orange-300 focus:border-orange-400 outline-none bg-white"
-            style={{ fontFamily: "'Playfair Display', serif" }}
-          />
-        </div>
-      )}
-
-      {booking.paymentMethod === "netbanking" && (
-        <div className="p-5 rounded-xl border border-gray-100 bg-gray-50">
-          <label
-            className="block text-xs font-semibold text-gray-600 mb-1.5"
-            style={{ fontFamily: "'Playfair Display', serif" }}
-          >
-            Select Bank
-          </label>
-          <select
-            className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-orange-300 focus:border-orange-400 outline-none bg-white"
-            style={{ fontFamily: "'Playfair Display', serif" }}
-          >
-            <option value="">-- Select your bank --</option>
-            {[
-              "State Bank of India",
-              "HDFC Bank",
-              "ICICI Bank",
-              "Axis Bank",
-              "Kotak Bank",
-              "Punjab National Bank",
-            ].map((b) => (
-              <option key={b} value={b}>
-                {b}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-
-      <div className="flex items-start gap-3 p-4 bg-green-50 rounded-xl border border-green-100">
-        <FiShield className="text-green-500 mt-0.5 flex-shrink-0" />
-        <p className="text-xs text-green-700" style={{ fontFamily: "'Playfair Display', serif" }}>
-          Your payment is secured with 256-bit SSL encryption. We never store your card details
-          on our servers.
-        </p>
-      </div>
-    </div>
-  );
-}
-
 // ─── Success Screen ────────────────────────────────────────────────────────────
 
 function SuccessScreen({
@@ -1120,7 +924,6 @@ export default function PackageBooking({ slug }: { slug: string }) {
             {step === 1 && <Step1 booking={booking} pkg={pkg} onChange={handleChange} />}
             {step === 2 && <Step2 booking={booking} onChange={handleChange} />}
             {step === 3 && <Step3 booking={booking} onChange={handleChange} />}
-            {step === 4 && <Step4 booking={booking} onChange={handleChange} />}
 
             {/* Navigation */}
             <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-100">
@@ -1147,17 +950,7 @@ export default function PackageBooking({ slug }: { slug: string }) {
                 >
                   Continue <FiArrowRight />
                 </button>
-              ) : (
-                <button
-                  type="button"
-                  disabled={!canProceed()}
-                  onClick={() => setSubmitted(true)}
-                  className="btn-pro flex items-center gap-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-200 disabled:cursor-not-allowed text-white font-semibold px-8 py-3 rounded-full text-sm transition-colors shadow-lg shadow-green-200"
-                  style={{ fontFamily: "'Playfair Display', serif" }}
-                >
-                  Confirm & Pay <FiCheckCircle />
-                </button>
-              )}
+              ) : null}
             </div>
           </div>
         </div>
