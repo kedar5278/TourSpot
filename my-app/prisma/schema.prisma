@@ -1,12 +1,3 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
-}
-
 model Booking {
   id            String    @id @default(cuid())
   userId        String
@@ -21,6 +12,8 @@ model Booking {
   guests        Int
   totalAmount   Float
   status        String    @default("confirmed")
+  bookingType   String    @default("package")  // ← add this
+  serviceDetails String?                        // ← add this
   createdAt     DateTime  @default(now())
   cancelledAt   DateTime?
 }
