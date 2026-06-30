@@ -1,15 +1,13 @@
+// app/api/booking/route.ts
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
-
-export async function GET() {
-  return NextResponse.json({ message: "Booking API is ready" }, { status: 200 });
-}
 
 export async function POST(req: Request) {
   const { userId } = await auth();
+  const user = await currentUser();
 
-  if (!userId) {
+  if (!userId || !user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -17,27 +15,36 @@ export async function POST(req: Request) {
     const body = await req.json();
     const {
       packageSlug,
+      packageName,
+      packageImage,
+      location,
+      duration,
       travelDate,
       guests,
       totalAmount,
-      status = "Confirmed",
     } = body ?? {};
 
     if (!packageSlug || !travelDate || typeof guests !== "number" || typeof totalAmount !== "number") {
-      return NextResponse.json(
-        { error: "Missing required booking data" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Missing required booking data" }, { status: 400 });
     }
+
+    const email = user.primaryEmailAddress?.emailAddress ?? "";
+    const bookingRef = "TS" + Math.floor(100000 + Math.random() * 900000);
 
     const booking = await prisma.booking.create({
       data: {
         userId,
+        email,
+        bookingRef,
         packageSlug,
+        packageName,
+        packageImage,
+        location,
+        duration,
         travelDate: new Date(travelDate),
         guests,
         totalAmount,
-        status,
+        status: "confirmed",
       },
     });
 
