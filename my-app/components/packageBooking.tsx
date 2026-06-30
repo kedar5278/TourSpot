@@ -821,10 +821,33 @@ export default function PackageBooking({ slug }: { slug: string }) {
         contact: booking.travelers[0]?.phone,
       },
       theme: { color: "#f97316" },
-      handler: function (response: any) {
-        // payment successful — no verification needed without backend
-        console.log("Payment success:", response);
-        setSubmitted(true);
+      handler: async function (response: any) {
+        try {
+          const res = await fetch("/api/booking", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              packageSlug: slug,
+              travelDate: booking.travelDate,
+              guests: booking.guests,
+              totalAmount: total,
+              status: "Confirmed",
+            }),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            throw new Error(data.error ?? "Failed to save booking");
+          }
+
+          console.log("Payment success:", response);
+          console.log("Booking saved:", data.booking);
+          setSubmitted(true);
+        } catch (error: any) {
+          console.error("Booking save failed:", error);
+          alert(error.message || "Booking could not be saved. Please contact support.");
+        }
       },
     };
 
