@@ -828,6 +828,10 @@ export default function PackageBooking({ slug }: { slug: string }) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               packageSlug: slug,
+              packageName: pkg.name,        // ← yeh missing tha
+              packageImage: pkg.image,      // ← yeh missing tha
+              location: pkg.location,       // ← yeh missing tha
+              duration: pkg.duration,
               travelDate: booking.travelDate,
               guests: booking.guests,
               totalAmount: total,
