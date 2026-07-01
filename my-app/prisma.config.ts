@@ -1,6 +1,9 @@
-import { defineConfig } from "prisma/config";
-import { PrismaMySQL } from "@prisma/adapter-mysql";
-import mysql from "mysql2/promise";
+// @ts-ignore: package may not have types or be missing in some environments
+import { defineConfig } from "prisma";
+// @ts-ignore: package may not have types or be missing in some environments
+const { PrismaMySQL } = require("@prisma/adapter-mysql");
+// @ts-ignore: package may not have types or be missing in some environments
+const mysql = require("mysql2/promise");
 
 export default defineConfig({
   earlyAccess: true,
