@@ -11,12 +11,12 @@ import {
 
 // ─── Service Map ─────────────────────────────────────────────────────────────
 const serviceMap: Record<string, { title: string; image: string; icon: React.ReactNode }> = {
-  "hotel-booking": { title: "Hotel Booking", image: "/images/hotel.jpg", icon: <FiHome /> },
-  "bus-booking": { title: "Bus Booking", image: "/images/bus.jpg", icon: <FiTruck /> },
-  "train-booking": { title: "Train Booking", image: "/images/train.jpg", icon: <FiTruck /> },
-  "flight-booking": { title: "Flight Booking", image: "/images/flight.jpg", icon: <FiBriefcase /> },
-  "car-rental": { title: "Car Rental", image: "/images/car.jpg", icon: <FiTruck /> },
-  "tour-guide": { title: "Tour Guide", image: "/images/guide.jpg", icon: <FiMapPin /> },
+  "hotel-booking": { title: "Hotel Booking", image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80", icon: <FiHome /> },
+  "bus-booking": { title: "Bus Booking", image: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&q=80", icon: <FiTruck /> },
+  "train-booking": { title: "Train Booking", image: "https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=400&q=80", icon: <FiTruck /> },
+  "flight-booking": { title: "Flight Booking", image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=400&q=80", icon: <FiBriefcase /> },
+  "car-rental": { title: "Car Rental", image: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=400&q=80", icon: <FiTruck /> },
+  "tour-guide": { title: "Tour Guide", image: "https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=400&q=80", icon: <FiMapPin /> },
 };
 
 // ─── Service Fields ─────────────────────────────────────────────────────────────
