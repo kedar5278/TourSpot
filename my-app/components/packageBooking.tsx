@@ -71,6 +71,47 @@ const EMPTY_TRAVELER: TravelerInfo = {
   pincode: "",
 };
 
+// ─── Validation Helpers ─────────────────────────────────────────────────────
+
+const NAME_REGEX = /^[a-zA-Z\s]{2,30}$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_REGEX = /^[6-9]\d{9}$/; // Indian 10-digit mobile
+const PINCODE_REGEX = /^\d{6}$/;
+const MAX_SPECIAL_REQUEST_LEN = 500;
+
+type TravelerErrors = Partial<Record<keyof TravelerInfo, string>>;
+
+function validateTraveler(t: TravelerInfo): TravelerErrors {
+  const errors: TravelerErrors = {};
+
+  const firstName = t.firstName.trim();
+  const lastName = t.lastName.trim();
+  const email = t.email.trim();
+  const phoneDigits = t.phone.replace(/\D/g, "");
+  const pincode = t.pincode.trim();
+
+  if (!firstName) errors.firstName = "First name is required";
+  else if (!NAME_REGEX.test(firstName)) errors.firstName = "Only letters, min 2 characters";
+
+  if (!lastName) errors.lastName = "Last name is required";
+  else if (!NAME_REGEX.test(lastName)) errors.lastName = "Only letters, min 2 characters";
+
+  if (!email) errors.email = "Email is required";
+  else if (!EMAIL_REGEX.test(email)) errors.email = "Enter a valid email address";
+
+  if (!phoneDigits) errors.phone = "Phone number is required";
+  else if (!PHONE_REGEX.test(phoneDigits.slice(-10)) || phoneDigits.length !== 10)
+    errors.phone = "Enter a valid 10-digit mobile number";
+
+  if (pincode && !PINCODE_REGEX.test(pincode)) errors.pincode = "Enter a valid 6-digit pin code";
+
+  return errors;
+}
+
+function isTravelerValid(t: TravelerInfo): boolean {
+  return Object.keys(validateTraveler(t)).length === 0;
+}
+
 // ─── Helper ───────────────────────────────────────────────────────────────────
 
 function parsePriceNumber(priceStr: string): number {
@@ -238,12 +279,21 @@ function Step1({
   booking,
   pkg,
   onChange,
+  showErrors,
 }: {
   booking: BookingState;
   pkg: NonNullable<ReturnType<typeof allPackages.find>>;
   onChange: (k: keyof BookingState, v: BookingState[keyof BookingState]) => void;
+  showErrors: boolean;
 }) {
   const today = new Date().toISOString().split("T")[0];
+  const maxGuests = Math.min(20, parseInt(String(pkg.groupSize || "20"), 10) || 20);
+
+  const dateError = showErrors && !booking.travelDate ? "Please select a travel date" : "";
+  const guestsError =
+    showErrors && (booking.guests < 1 || booking.guests > maxGuests)
+      ? `Guests must be between 1 and ${maxGuests}`
+      : "";
 
   return (
     <div className="space-y-6">
@@ -289,10 +339,19 @@ function Step1({
             min={today}
             value={booking.travelDate}
             onChange={(e) => onChange("travelDate", e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm text-black focus:ring-2 focus:ring-orange-300 focus:border-orange-400 outline-none transition-all"
+            className={`w-full pl-10 pr-4 py-3 border rounded-xl text-sm text-black focus:ring-2 outline-none transition-all ${
+              dateError
+                ? "border-red-300 focus:ring-red-200 focus:border-red-400"
+                : "border-gray-200 focus:ring-orange-300 focus:border-orange-400"
+            }`}
             style={{ fontFamily: "'Playfair Display', serif" }}
           />
         </div>
+        {dateError && (
+          <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <FiAlertCircle className="text-xs" /> {dateError}
+          </p>
+        )}
       </div>
 
       <div>
@@ -323,7 +382,7 @@ function Step1({
           </div>
           <button
             type="button"
-            onClick={() => onChange("guests", Math.min(20, booking.guests + 1))}
+            onClick={() => onChange("guests", Math.min(maxGuests, booking.guests + 1))}
             className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:border-orange-400 hover:text-orange-500 transition-colors font-bold text-lg"
           >
             +
@@ -332,17 +391,28 @@ function Step1({
         <p className="text-xs text-gray-400 mt-2 text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
           Group size: {pkg.groupSize} guests
         </p>
+        {guestsError && (
+          <p className="text-xs text-red-500 mt-1.5 text-center flex items-center justify-center gap-1" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <FiAlertCircle className="text-xs" /> {guestsError}
+          </p>
+        )}
       </div>
 
       <div>
-        <label
-          className="block text-sm font-semibold text-gray-700 mb-2"
-          style={{ fontFamily: "'Playfair Display', serif" }}
-        >
-          Special Requests <span className="text-gray-400 font-normal">(optional)</span>
-        </label>
+        <div className="flex items-center justify-between mb-2">
+          <label
+            className="block text-sm font-semibold text-gray-700"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            Special Requests <span className="text-gray-400 font-normal">(optional)</span>
+          </label>
+          <span className="text-xs text-gray-400" style={{ fontFamily: "'Playfair Display', serif" }}>
+            {booking.specialRequests.length}/{MAX_SPECIAL_REQUEST_LEN}
+          </span>
+        </div>
         <textarea
           rows={3}
+          maxLength={MAX_SPECIAL_REQUEST_LEN}
           value={booking.specialRequests}
           onChange={(e) => onChange("specialRequests", e.target.value)}
           placeholder="Dietary requirements, accessibility needs, special occasions..."
@@ -379,13 +449,21 @@ function Step1({
 function TravelerForm({
   index,
   data,
+  errors,
+  showErrors,
   onChange,
 }: {
   index: number;
   data: TravelerInfo;
+  errors: TravelerErrors;
+  showErrors: boolean;
   onChange: (field: keyof TravelerInfo, val: string) => void;
 }) {
   const [expanded, setExpanded] = useState(index === 0);
+  const [touched, setTouched] = useState<Partial<Record<keyof TravelerInfo, boolean>>>({});
+
+  const markTouched = (key: keyof TravelerInfo) =>
+    setTouched((prev) => ({ ...prev, [key]: true }));
 
   const fields: {
     key: keyof TravelerInfo;
@@ -393,16 +471,27 @@ function TravelerForm({
     type?: string;
     placeholder: string;
     required?: boolean;
+    inputMode?: "numeric" | "text" | "email" | "tel";
+    maxLength?: number;
   }[] = [
       { key: "firstName", label: "First Name", placeholder: "John", required: true },
       { key: "lastName", label: "Last Name", placeholder: "Doe", required: true },
       { key: "email", label: "Email", type: "email", placeholder: "john@example.com", required: true },
-      { key: "phone", label: "Phone", type: "tel", placeholder: "+91 98765 43210", required: true },
+      { key: "phone", label: "Phone", type: "tel", placeholder: "9876543210", required: true, inputMode: "numeric", maxLength: 10 },
       { key: "address", label: "Address", placeholder: "123 Street, Area" },
       { key: "city", label: "City", placeholder: "Delhi" },
       { key: "state", label: "State", placeholder: "Maharashtra" },
-      { key: "pincode", label: "Pin Code", placeholder: "400001" },
+      { key: "pincode", label: "Pin Code", placeholder: "400001", inputMode: "numeric", maxLength: 6 },
     ];
+
+  const handleFieldChange = (f: typeof fields[number], raw: string) => {
+    let value = raw;
+    // Restrict phone / pincode to digits only
+    if (f.key === "phone" || f.key === "pincode") {
+      value = raw.replace(/\D/g, "").slice(0, f.maxLength);
+    }
+    onChange(f.key, value);
+  };
 
   return (
     <div className="rounded-xl border border-gray-100 overflow-hidden">
@@ -429,30 +518,53 @@ function TravelerForm({
             )}
           </div>
         </div>
-        <span className="text-gray-400 text-lg">{expanded ? "−" : "+"}</span>
+        <div className="flex items-center gap-2">
+          {showErrors && Object.keys(errors).length > 0 && (
+            <span className="flex items-center gap-1 text-xs text-red-500 font-semibold">
+              <FiAlertCircle /> {Object.keys(errors).length} issue{Object.keys(errors).length > 1 ? "s" : ""}
+            </span>
+          )}
+          <span className="text-gray-400 text-lg">{expanded ? "−" : "+"}</span>
+        </div>
       </button>
 
       {expanded && (
         <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {fields.map((f) => (
-            <div key={f.key} className={f.key === "address" ? "sm:col-span-2" : ""}>
-              <label
-                className="block text-xs font-semibold text-gray-600 mb-1.5"
-                style={{ fontFamily: "'Playfair Display', serif" }}
-              >
-                {f.label}
-                {f.required && <span className="text-orange-500"> *</span>}
-              </label>
-              <input
-                type={f.type || "text"}
-                placeholder={f.placeholder}
-                value={data[f.key]}
-                onChange={(e) => onChange(f.key, e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-black focus:ring-2 focus:ring-orange-300 focus:border-orange-400 outline-none transition-all"
-                style={{ fontFamily: "'Playfair Display', serif" }}
-              />
-            </div>
-          ))}
+          {fields.map((f) => {
+            const errorMsg = errors[f.key];
+            const shouldShowError = !!errorMsg && (showErrors || touched[f.key]);
+            return (
+              <div key={f.key} className={f.key === "address" ? "sm:col-span-2" : ""}>
+                <label
+                  className="block text-xs font-semibold text-gray-600 mb-1.5"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
+                  {f.label}
+                  {f.required && <span className="text-orange-500"> *</span>}
+                </label>
+                <input
+                  type={f.type || "text"}
+                  inputMode={f.inputMode}
+                  maxLength={f.maxLength}
+                  placeholder={f.placeholder}
+                  value={data[f.key]}
+                  onChange={(e) => handleFieldChange(f, e.target.value)}
+                  onBlur={() => markTouched(f.key)}
+                  className={`w-full border rounded-lg px-3 py-2.5 text-sm text-black focus:ring-2 outline-none transition-all ${
+                    shouldShowError
+                      ? "border-red-300 focus:ring-red-200 focus:border-red-400"
+                      : "border-gray-200 focus:ring-orange-300 focus:border-orange-400"
+                  }`}
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                />
+                {shouldShowError && (
+                  <p className="text-xs text-red-500 mt-1 flex items-center gap-1" style={{ fontFamily: "'Playfair Display', serif" }}>
+                    <FiAlertCircle className="text-xs flex-shrink-0" /> {errorMsg}
+                  </p>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
@@ -464,15 +576,20 @@ function TravelerForm({
 function Step2({
   booking,
   onChange,
+  showErrors,
 }: {
   booking: BookingState;
   onChange: (k: keyof BookingState, v: BookingState[keyof BookingState]) => void;
+  showErrors: boolean;
 }) {
   const updateTraveler = (idx: number, field: keyof TravelerInfo, val: string) => {
     const updated = [...booking.travelers];
     updated[idx] = { ...updated[idx], [field]: val };
     onChange("travelers", updated);
   };
+
+  const travelerErrorsList = booking.travelers.map(validateTraveler);
+  const hasAnyError = travelerErrorsList.some((e) => Object.keys(e).length > 0);
 
   return (
     <div className="space-y-6">
@@ -489,12 +606,23 @@ function Step2({
         </p>
       </div>
 
+      {showErrors && hasAnyError && (
+        <div className="flex items-start gap-3 p-4 bg-red-50 rounded-xl border border-red-100">
+          <FiAlertCircle className="text-red-500 mt-0.5 flex-shrink-0" />
+          <p className="text-xs text-red-600 font-medium" style={{ fontFamily: "'Playfair Display', serif" }}>
+            Please correct the highlighted fields below before continuing.
+          </p>
+        </div>
+      )}
+
       <div className="space-y-3">
         {booking.travelers.map((t, i) => (
           <TravelerForm
             key={i}
             index={i}
             data={t}
+            errors={travelerErrorsList[i]}
+            showErrors={showErrors}
             onChange={(field, val) => updateTraveler(i, field, val)}
           />
         ))}
@@ -761,6 +889,7 @@ export default function PackageBooking({ slug }: { slug: string }) {
   const pkg = allPackages.find((p) => p.slug === slug);
   const [step, setStep] = useState<Step>(1);
   const [submitted, setSubmitted] = useState(false);
+  const [showErrors, setShowErrors] = useState(false);
   const [booking, setBooking] = useState<BookingState>({
     travelDate: "",
     guests: 2,
@@ -797,7 +926,6 @@ export default function PackageBooking({ slug }: { slug: string }) {
     });
   };
 
-
   const handleBooking = async () => {
     if (!pkg) return;
 
@@ -828,9 +956,9 @@ export default function PackageBooking({ slug }: { slug: string }) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               packageSlug: slug,
-              packageName: pkg.name,        // ← yeh missing tha
-              packageImage: pkg.image,      // ← yeh missing tha
-              location: pkg.location,       // ← yeh missing tha
+              packageName: pkg.name,
+              packageImage: pkg.image,
+              location: pkg.location,
               duration: pkg.duration,
               travelDate: booking.travelDate,
               guests: booking.guests,
@@ -857,16 +985,11 @@ export default function PackageBooking({ slug }: { slug: string }) {
 
     const rzp = new (window as any).Razorpay(options);
     rzp.on("payment.failed", (response: any) => {
-      console.error("Payment failed reason:", response.error); // 👈 add this
+      console.error("Payment failed reason:", response.error);
       alert("Payment failed: " + response.error.description);
     });
     rzp.open();
   };
-
-  const addOnTotal = booking.addOns.reduce((sum, id) => {
-    const addon = ADD_ONS.find((a) => a.id === id);
-    return sum + (addon ? addon.price * booking.guests : 0);
-  }, 0);
 
   if (!pkg) {
     return (
@@ -897,27 +1020,39 @@ export default function PackageBooking({ slug }: { slug: string }) {
     return <SuccessScreen pkg={pkg} booking={booking} />;
   }
 
+  const maxGuests = Math.min(20, parseInt(String(pkg.groupSize || "20"), 10) || 20);
+
   const canProceed = () => {
-    if (step === 1) return !!booking.travelDate && booking.guests > 0;
+    if (step === 1) {
+      return !!booking.travelDate && booking.guests >= 1 && booking.guests <= maxGuests;
+    }
     if (step === 2) {
-      return booking.travelers.every(
-        (t) => t.firstName && t.lastName && t.email && t.phone
-      );
+      return booking.travelers.every((t) => isTravelerValid(t));
     }
     if (step === 3) return true;
-    if (step === 4) {
-      if (booking.paymentMethod === "card") {
-        return (
-          booking.cardNumber.replace(/\s/g, "").length === 16 &&
-          !!booking.cardName &&
-          booking.cardExpiry.length >= 7 &&
-          booking.cardCvv.length >= 3
-        );
-      }
-      if (booking.paymentMethod === "upi") return !!booking.upiId;
-      return true;
-    }
     return true;
+  };
+
+  const handleContinue = () => {
+    if (!canProceed()) {
+      setShowErrors(true);
+      return;
+    }
+    setShowErrors(false);
+    setStep((s) => (s + 1) as Step);
+  };
+
+  const handlePrevious = () => {
+    setShowErrors(false);
+    setStep((s) => (s - 1) as Step);
+  };
+
+  const handlePayNow = () => {
+    if (!canProceed()) {
+      setShowErrors(true);
+      return;
+    }
+    handleBooking();
   };
 
   return (
@@ -986,17 +1121,20 @@ export default function PackageBooking({ slug }: { slug: string }) {
           <StepIndicator current={step} />
 
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
-            {step === 1 && <Step1 booking={booking} pkg={pkg} onChange={handleChange} />}
-            {step === 2 && <Step2 booking={booking} onChange={handleChange} />}
+            {step === 1 && (
+              <Step1 booking={booking} pkg={pkg} onChange={handleChange} showErrors={showErrors} />
+            )}
+            {step === 2 && (
+              <Step2 booking={booking} onChange={handleChange} showErrors={showErrors} />
+            )}
             {step === 3 && <Step3 booking={booking} onChange={handleChange} />}
-
 
             {/* Navigation */}
             <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-100">
               {step > 1 ? (
                 <button
                   type="button"
-                  onClick={() => setStep((s) => (s - 1) as Step)}
+                  onClick={handlePrevious}
                   className="flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-orange-500 transition-colors"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
@@ -1009,9 +1147,8 @@ export default function PackageBooking({ slug }: { slug: string }) {
               {step < 3 ? (
                 <button
                   type="button"
-                  disabled={!canProceed()}
-                  onClick={() => setStep((s) => (s + 1) as Step)}
-                  className="btn-pro flex items-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-200 disabled:cursor-not-allowed text-white font-semibold px-8 py-3 rounded-full text-sm transition-colors"
+                  onClick={handleContinue}
+                  className="btn-pro flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold px-8 py-3 rounded-full text-sm transition-colors"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
                   Continue <FiArrowRight />
@@ -1019,7 +1156,7 @@ export default function PackageBooking({ slug }: { slug: string }) {
               ) : (
                 <button
                   type="button"
-                  onClick={handleBooking}
+                  onClick={handlePayNow}
                   className="btn-pro flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-3 rounded-full text-sm transition-colors"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >

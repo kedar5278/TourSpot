@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import React, { useState } from "react";
-import Footer from "./footer";
 import {
   FiPhone,
   FiMail,
@@ -10,6 +9,7 @@ import {
   FiClock,
   FiCheckCircle,
   FiSend,
+  FiAlertCircle,
 } from "react-icons/fi";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -32,12 +32,13 @@ const initialForm: FormData = {
   message: "",
 };
 
-// ─── Component ────────────────────────────────────────────────────────────────────
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState<FormData>(initialForm);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState<Partial<Record<keyof FormData, boolean>>>({});
 
   const validate = (data: FormData): FormErrors => {
     const newErrors: FormErrors = {};
@@ -51,7 +52,7 @@ export default function ContactPage() {
       newErrors.name = "Name can only contain letters";
     }
 
-    // Phone (optional field, but validate format if filled)
+    // Phone (optional but validate format if filled)
     if (data.phone.trim()) {
       const cleanedPhone = data.phone.replace(/[\s-]/g, "");
       if (!/^(\+91)?[6-9]\d{9}$/.test(cleanedPhone)) {
@@ -82,27 +83,47 @@ export default function ContactPage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-    // clear the error for this field as the user types
+
+    // Phone: only allow digits, +, spaces, dashes
+    if (name === "phone") {
+      const cleaned = value.replace(/[^\d\s+\-()]/g, "").slice(0, 15);
+      setForm((prev) => ({ ...prev, [name]: cleaned }));
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
+
+    // Clear error on typing
     if (errors[name as keyof FormData]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   };
 
+  const handleBlur = (name: keyof FormData) => {
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    const fieldErrors = validate(form);
+    setErrors((prev) => ({ ...prev, [name]: fieldErrors[name] }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     const validationErrors = validate(form);
     setErrors(validationErrors);
+    setTouched({ name: true, phone: true, email: true, subject: true, message: true });
 
-    if (Object.keys(validationErrors).length > 0) {
-      return;
-    }
+    if (Object.keys(validationErrors).length > 0) return;
 
     // TODO: send `form` to your API route here
     setSubmitted(true);
     setForm(initialForm);
+    setTouched({});
   };
+
+  const inputClass = (field: keyof FormData) =>
+    `w-full border rounded-lg px-3 py-2.5 text-sm text-black focus:ring-2 outline-none transition-all ${
+      errors[field] && touched[field]
+        ? "border-red-400 focus:ring-red-200 focus:border-red-400 bg-red-50"
+        : "border-gray-200 focus:ring-orange-300 focus:border-orange-400"
+    }`;
 
   return (
     <div className="font-sans text-gray-800 bg-white">
@@ -194,7 +215,7 @@ export default function ContactPage() {
       {/* ── Form Section ── */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
         <div className="grid md:grid-cols-2 gap-10">
-          {/* Left — Message */}
+          {/* Left — Info */}
           <div>
             <p
               className="text-orange-500 text-xs font-semibold tracking-widest uppercase mb-1"
@@ -247,14 +268,13 @@ export default function ContactPage() {
                   className="text-xl font-bold text-gray-800 mb-2"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
-                  Message Sent!
+                  Message Sent! 🎉
                 </h3>
                 <p
                   className="text-gray-500 text-sm mb-4"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
-                  Thank you for reaching out. We'll get back to you within 24
-                  hours.
+                  Thank you for reaching out. We'll get back to you within 24 hours.
                 </p>
                 <button
                   onClick={() => setSubmitted(false)}
@@ -270,77 +290,85 @@ export default function ContactPage() {
                 noValidate
                 className="rounded-2xl border border-gray-100 bg-white shadow-sm p-6 space-y-4"
               >
+                {/* Name + Phone */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Name */}
                   <div>
                     <label
                       className="text-xs font-semibold text-gray-700 block mb-1"
                       style={{ fontFamily: "'Playfair Display', serif" }}
                     >
-                      Full Name
+                      Full Name <span className="text-orange-500">*</span>
                     </label>
                     <input
                       type="text"
                       name="name"
                       value={form.name}
                       onChange={handleChange}
+                      onBlur={() => handleBlur("name")}
                       placeholder="Your name"
-                      className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:ring-2 outline-none ${
-                        errors.name
-                          ? "border-red-400 focus:ring-red-200 focus:border-red-400"
-                          : "border-gray-200 focus:ring-orange-300 focus:border-orange-400"
-                      }`}
+                      className={inputClass("name")}
+                      style={{ fontFamily: "'Playfair Display', serif" }}
                     />
-                    {errors.name && (
-                      <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+                    {errors.name && touched.name && (
+                      <p className="text-red-500 text-xs mt-1 flex items-center gap-1" style={{ fontFamily: "'Playfair Display', serif" }}>
+                        <FiAlertCircle className="flex-shrink-0" /> {errors.name}
+                      </p>
                     )}
                   </div>
+
+                  {/* Phone */}
                   <div>
                     <label
                       className="text-xs font-semibold text-gray-700 block mb-1"
                       style={{ fontFamily: "'Playfair Display', serif" }}
                     >
-                      Phone
+                      Phone <span className="text-gray-400 font-normal">(optional)</span>
                     </label>
                     <input
                       type="tel"
                       name="phone"
                       value={form.phone}
                       onChange={handleChange}
+                      onBlur={() => handleBlur("phone")}
                       placeholder="+91 98765 43210"
-                      className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:ring-2 outline-none ${
-                        errors.phone
-                          ? "border-red-400 focus:ring-red-200 focus:border-red-400"
-                          : "border-gray-200 focus:ring-orange-300 focus:border-orange-400"
-                      }`}
+                      className={inputClass("phone")}
+                      style={{ fontFamily: "'Playfair Display', serif" }}
                     />
-                    {errors.phone && (
-                      <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
+                    {errors.phone && touched.phone && (
+                      <p className="text-red-500 text-xs mt-1 flex items-center gap-1" style={{ fontFamily: "'Playfair Display', serif" }}>
+                        <FiAlertCircle className="flex-shrink-0" /> {errors.phone}
+                      </p>
                     )}
                   </div>
                 </div>
+
+                {/* Email */}
                 <div>
                   <label
                     className="text-xs font-semibold text-gray-700 block mb-1"
                     style={{ fontFamily: "'Playfair Display', serif" }}
                   >
-                    Email Address
+                    Email Address <span className="text-orange-500">*</span>
                   </label>
                   <input
                     type="email"
                     name="email"
                     value={form.email}
                     onChange={handleChange}
+                    onBlur={() => handleBlur("email")}
                     placeholder="you@example.com"
-                    className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:ring-2 outline-none ${
-                      errors.email
-                        ? "border-red-400 focus:ring-red-200 focus:border-red-400"
-                        : "border-gray-200 focus:ring-orange-300 focus:border-orange-400"
-                    }`}
+                    className={inputClass("email")}
+                    style={{ fontFamily: "'Playfair Display', serif" }}
                   />
-                  {errors.email && (
-                    <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+                  {errors.email && touched.email && (
+                    <p className="text-red-500 text-xs mt-1 flex items-center gap-1" style={{ fontFamily: "'Playfair Display', serif" }}>
+                      <FiAlertCircle className="flex-shrink-0" /> {errors.email}
+                    </p>
                   )}
                 </div>
+
+                {/* Subject */}
                 <div>
                   <label
                     className="text-xs font-semibold text-gray-700 block mb-1"
@@ -352,7 +380,8 @@ export default function ContactPage() {
                     name="subject"
                     value={form.subject}
                     onChange={handleChange}
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-orange-300 focus:border-orange-400 outline-none bg-white"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-black focus:ring-2 focus:ring-orange-300 focus:border-orange-400 outline-none bg-white transition-all"
+                    style={{ fontFamily: "'Playfair Display', serif" }}
                   >
                     <option>General Enquiry</option>
                     <option>Booking Help</option>
@@ -361,36 +390,48 @@ export default function ContactPage() {
                     <option>Partnership</option>
                   </select>
                 </div>
+
+                {/* Message */}
                 <div>
-                  <label
-                    className="text-xs font-semibold text-gray-700 block mb-1"
-                    style={{ fontFamily: "'Playfair Display', serif" }}
-                  >
-                    Message
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label
+                      className="text-xs font-semibold text-gray-700"
+                      style={{ fontFamily: "'Playfair Display', serif" }}
+                    >
+                      Message <span className="text-orange-500">*</span>
+                    </label>
+                    <span
+                      className={`text-xs ${form.message.length > 900 ? "text-orange-500" : "text-gray-400"}`}
+                      style={{ fontFamily: "'Playfair Display', serif" }}
+                    >
+                      {form.message.length}/1000
+                    </span>
+                  </div>
                   <textarea
                     name="message"
                     value={form.message}
                     onChange={handleChange}
+                    onBlur={() => handleBlur("message")}
                     rows={4}
+                    maxLength={1000}
                     placeholder="How can we help you?"
-                    className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:ring-2 outline-none resize-none ${
-                      errors.message
-                        ? "border-red-400 focus:ring-red-200 focus:border-red-400"
-                        : "border-gray-200 focus:ring-orange-300 focus:border-orange-400"
-                    }`}
+                    className={inputClass("message")}
+                    style={{ fontFamily: "'Playfair Display', serif" }}
                   />
-                  {errors.message && (
-                    <p className="text-red-500 text-xs mt-1">{errors.message}</p>
+                  {errors.message && touched.message && (
+                    <p className="text-red-500 text-xs mt-1 flex items-center gap-1" style={{ fontFamily: "'Playfair Display', serif" }}>
+                      <FiAlertCircle className="flex-shrink-0" /> {errors.message}
+                    </p>
                   )}
                 </div>
+
+                {/* Submit */}
                 <button
                   type="submit"
-                  className="book-now-btn w-full inline-flex items-center justify-center gap-2 font-semibold text-sm border border-orange-500 text-orange-500 px-5 py-3 rounded-full"
+                  className="w-full inline-flex items-center justify-center gap-2 font-semibold text-sm bg-orange-500 hover:bg-orange-600 text-white px-5 py-3 rounded-full transition-colors"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
-                  <span className="book-now-text">Send Message</span>
-                  <FiSend className="book-now-arrow text-sm" />
+                  Send Message <FiSend className="text-sm" />
                 </button>
               </form>
             )}

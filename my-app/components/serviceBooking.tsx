@@ -220,6 +220,12 @@ export default function ServiceBooking({ slug }: { slug: string }) {
 
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 grid lg:grid-cols-3 gap-6 sm:gap-10">
         <div className="lg:col-span-2">
+          <button className="btn-pro bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-2 rounded-full text-sm mb-6 flex items-center gap-2"
+            onClick={() => window.history.back()}>
+            <FiArrowLeft /> Back To Services
+          </button>
+        </div>
+        <div className="lg:col-span-2">
           <h2 className="text-2xl font-bold text-gray-800 mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
             Booking Details
           </h2>
