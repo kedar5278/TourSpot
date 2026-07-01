@@ -18,7 +18,7 @@ const navLinks = [
 ];
 
 /** Shown when the user is NOT signed in — generic profile icon with a dropdown */
-function GuestProfileDropdown() {
+function GuestProfileDropdown({ mobile = false }: { mobile?: boolean }) {
   const [dropOpen, setDropOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -57,55 +57,82 @@ function GuestProfileDropdown() {
 
       {/* Dropdown */}
       {dropOpen && (
-        <div
-          className="absolute right-0 mt-3 w-48 rounded-2xl overflow-hidden shadow-2xl border border-white/10"
-          style={{
-            background: "linear-gradient(135deg, rgba(15,15,30,0.95) 0%, rgba(30,20,50,0.97) 100%)",
-            backdropFilter: "blur(20px)",
-            animation: "fadeSlideDown 0.18s ease",
-          }}
-        >
-          {/* Arrow pointer */}
+        <>
+          {/*
+            IMPORTANT: on mobile this dropdown lives inside the mobile menu
+            container, which has `overflow-hidden` (needed for the slide-down
+            max-height animation). An `absolute` child would get clipped and
+            become invisible/unclickable there, which was the original bug.
+            Using `fixed` positioning takes it out of that clipped flow and
+            anchors it to the viewport instead, so it always renders on top.
+          */}
+          {mobile && (
+            <div
+              className="fixed inset-0 z-[9998] bg-black/40"
+              onClick={() => setDropOpen(false)}
+            />
+          )}
           <div
-            className="absolute -top-2 right-4 w-4 h-4 rotate-45 border-t border-l border-white/10"
-            style={{ background: "rgba(15,15,30,0.95)" }}
-          />
+            className={
+              mobile
+                ? "fixed left-4 right-4 bottom-6 z-[9999] rounded-2xl overflow-hidden shadow-2xl border border-white/10"
+                : "absolute right-0 mt-3 w-48 z-[9999] rounded-2xl overflow-hidden shadow-2xl border border-white/10"
+            }
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(15,15,30,0.95) 0%, rgba(30,20,50,0.97) 100%)",
+              backdropFilter: "blur(20px)",
+              animation: mobile ? "fadeSlideUp 0.18s ease" : "fadeSlideDown 0.18s ease",
+            }}
+          >
+            {/* Arrow pointer (desktop only, points up to the icon) */}
+            {!mobile && (
+              <div
+                className="absolute -top-2 right-4 w-4 h-4 rotate-45 border-t border-l border-white/10"
+                style={{ background: "rgba(15,15,30,0.95)" }}
+              />
+            )}
 
-          <div className="relative p-3 flex flex-col gap-2">
-            <SignInButton mode="modal">
-              <button
-                onClick={() => setDropOpen(false)}
-                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-white/90 hover:bg-white/10 hover:text-orange-400 transition-all duration-200 text-sm font-medium text-left"
-                style={{ fontFamily: "'Playfair Display', serif" }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                </svg>
-                Sign In
-              </button>
-            </SignInButton>
+            <div className="relative p-3 flex flex-col gap-2">
+              <SignInButton mode="modal">
+                <button
+                  onClick={() => setDropOpen(false)}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-white/90 hover:bg-white/10 hover:text-orange-400 transition-all duration-200 text-sm font-medium text-left"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                  </svg>
+                  Sign In
+                </button>
+              </SignInButton>
 
-            <div className="h-px bg-white/10 mx-2" />
+              <div className="h-px bg-white/10 mx-2" />
 
-            <SignUpButton mode="modal">
-              <button
-                onClick={() => setDropOpen(false)}
-                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl bg-orange-500/90 hover:bg-orange-500 text-white transition-all duration-200 text-sm font-medium text-left"
-                style={{ fontFamily: "'Playfair Display', serif" }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                </svg>
-                Sign Up
-              </button>
-            </SignUpButton>
+              <SignUpButton mode="modal">
+                <button
+                  onClick={() => setDropOpen(false)}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl bg-orange-500/90 hover:bg-orange-500 text-white transition-all duration-200 text-sm font-medium text-left"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                  </svg>
+                  Sign Up
+                </button>
+              </SignUpButton>
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       <style>{`
         @keyframes fadeSlideDown {
           from { opacity: 0; transform: translateY(-8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeSlideUp {
+          from { opacity: 0; transform: translateY(8px); }
           to   { opacity: 1; transform: translateY(0); }
         }
       `}</style>
@@ -146,7 +173,7 @@ function IconCluster({
 
       {/* Profile: dropdown for guests, UserButton for signed-in */}
       <Show when="signed-out">
-        <GuestProfileDropdown />
+        <GuestProfileDropdown mobile={mobile} />
       </Show>
       <Show when="signed-in">
         <div className="flex items-center">
