@@ -7,4 +7,4 @@ export default function HistoryPage() {
   alt={b.packageName} 
   className="w-full h-full object-cover" 
 />
-}
+} 
