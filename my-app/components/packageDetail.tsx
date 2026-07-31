@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Footer from "./footer";
-import { allPackages, type Package } from "@/data/packages";
 import {
   FiMapPin,
   FiCalendar,
@@ -22,13 +21,86 @@ import {
 import { useAuth, SignInButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
+interface Package {
+  id: string;
+  slug: string;
+  name: string;
+  location: string;
+  image: string;
+  gallery: string[];
+  price: string;
+  originalPrice?: string;
+  discount?: string;
+  duration: string;
+  rating: number;
+  reviews: number;
+  category: string;
+  highlights: string[];
+  groupSize: string;
+  featured?: boolean;
+  description: string;
+  bestTime: string;
+  itinerary: { day: string; title: string; text: string }[];
+  inclusions: string[];
+  exclusions: string[];
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────────
 
 export default function PackageDetail({ slug }: { slug: string }) {
-  const pkg = allPackages.find((p) => p.slug === slug);
+  const [pkg, setPkg] = useState<Package | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
   const [activeImg, setActiveImg] = useState(0);
+  const [related, setRelated] = useState<Package[]>([]);
+  const { isSignedIn } = useAuth();
+  const router = useRouter();
 
-  if (!pkg) {
+  useEffect(() => {
+    fetchPackage();
+  }, [slug]);
+
+  const fetchPackage = async () => {
+    try {
+      const res = await fetch(`/api/packages?slug=${slug}`);
+      const data = await res.json();
+      if (data.packages && data.packages.length > 0) {
+        setPkg(data.packages[0]);
+      } else {
+        setNotFound(true);
+      }
+    } catch (error) {
+      console.error("Failed to fetch package:", error);
+      setNotFound(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch related packages
+  useEffect(() => {
+    if (pkg) {
+      fetch(`/api/packages?category=${pkg.category}`)
+        .then((res) => res.json())
+        .then((data) => {
+          const relatedPkgs = (data.packages || [])
+            .filter((p: Package) => p.slug !== pkg.slug)
+            .slice(0, 3);
+          setRelated(relatedPkgs);
+        })
+        .catch(console.error);
+    }
+  }, [pkg]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+      </div>
+    );
+  }
+
+  if (notFound || !pkg) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-white px-6">
         <FiXCircle className="text-orange-500 text-5xl mb-4" />
@@ -56,13 +128,6 @@ export default function PackageDetail({ slug }: { slug: string }) {
       </div>
     );
   }
-
-  const related = allPackages
-    .filter((p) => p.category === pkg.category && p.slug !== pkg.slug)
-    .slice(0, 3);
-
-  const { isSignedIn } = useAuth();
-  const router = useRouter();
 
   return (
     <div className="font-sans text-gray-800 bg-white">

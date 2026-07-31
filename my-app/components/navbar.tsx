@@ -8,6 +8,7 @@ import {
   SignUpButton,
   UserButton,
 } from "@clerk/nextjs";
+import NotificationBell from "./NotificationBell";
 
 const navLinks = [
   { name: "Home", href: "/" },
@@ -150,6 +151,9 @@ function IconCluster({
 }) {
   return (
     <div className={`flex items-center gap-5 ${mobile ? "p-6" : "ml-6"}`}>
+      {/* Notification Bell */}
+      <NotificationBell />
+
       {/* History Icon */}
       <Link
         href="/history"

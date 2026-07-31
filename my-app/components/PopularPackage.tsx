@@ -1,39 +1,62 @@
-import React from 'react';
-import Link from 'next/link';
+"use client";
 
-const packages = [
-  {
-    name: 'Goa',
-    slug: 'goa',
-    location: 'India',
-    price: '₹5,499',
-    originalPrice: '₹7,499',
-    image: '/images/Goa.jpg',
-  },
-  {
-    name: 'Lakshadweep',
-    slug: 'lakshadweep',
-    location: 'India',
-    price: '₹6,000',
-    image: '/images/Lakshdweep.jpg',
-  },
-  {
-    name: 'Manali',
-    slug: 'manali',
-    location: 'India',
-    price: '₹7,500',
-    image: '/images/Manali.jpg',
-  },
-  {
-    name: 'North India',
-    slug: 'northeast-india',
-    location: 'India',
-    price: '₹3,500',
-    image: '/images/North India.jpg',
-  },
-];
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+
+interface Package {
+  id: string;
+  slug: string;
+  name: string;
+  location: string;
+  image: string;
+  price: string;
+  originalPrice?: string;
+}
 
 export default function PopularPackages() {
+  const [packages, setPackages] = useState<Package[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchPopularPackages();
+  }, []);
+
+  const fetchPopularPackages = async () => {
+    try {
+      const res = await fetch("/api/packages?featured=true");
+      const data = await res.json();
+      setPackages((data.packages || []).slice(0, 4));
+    } catch (error) {
+      console.error("Failed to fetch popular packages:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <section className="py-10 sm:py-14 px-4 sm:px-6 md:px-10 bg-white">
+        <h2
+          className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-6 sm:mb-8"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          Popular Packages
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="rounded-2xl overflow-hidden shadow-md bg-gray-100 animate-pulse">
+              <div className="h-48 sm:h-44 md:h-52 bg-gray-200" />
+              <div className="p-3 space-y-2">
+                <div className="h-4 bg-gray-200 rounded w-1/2" />
+                <div className="h-4 bg-gray-200 rounded w-1/3" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-10 sm:py-14 px-4 sm:px-6 md:px-10 bg-white">
       <h2
@@ -45,7 +68,7 @@ export default function PopularPackages() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         {packages.map((pkg) => (
           <Link
-            key={pkg.name}
+            key={pkg.slug}
             href={`/packages/${pkg.slug}`}
             className="card-hover rounded-2xl overflow-hidden shadow-md cursor-pointer group block"
           >

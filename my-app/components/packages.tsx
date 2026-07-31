@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import React, { useState } from "react";
-import { allPackages, type Package } from "@/data/packages";
+import React, { useState, useEffect } from "react";
 import {
   FiMapPin,
   FiCalendar,
@@ -13,6 +12,24 @@ import {
   FiCheckCircle,
   FiFilter,
 } from "react-icons/fi";
+
+interface Package {
+  id: string;
+  slug: string;
+  name: string;
+  location: string;
+  image: string;
+  price: string;
+  originalPrice?: string;
+  discount?: string;
+  duration: string;
+  rating: number;
+  reviews: number;
+  category: string;
+  highlights: string[];
+  groupSize: string;
+  featured?: boolean;
+}
 
 const categories = [
   "All",
@@ -27,6 +44,24 @@ const categories = [
 
 export default function PackagesPage() {
   const [active, setActive] = useState("All");
+  const [allPackages, setAllPackages] = useState<Package[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchPackages();
+  }, []);
+
+  const fetchPackages = async () => {
+    try {
+      const res = await fetch("/api/packages");
+      const data = await res.json();
+      setAllPackages(data.packages || []);
+    } catch (error) {
+      console.error("Failed to fetch packages:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filtered =
     active === "All"

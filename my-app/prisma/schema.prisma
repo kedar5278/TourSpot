@@ -26,3 +26,32 @@ model Booking {
   createdAt      DateTime  @default(now())
   cancelledAt    DateTime?
 }
+
+model Package {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  name            String   @db.VarChar(191)
+  location        String   @db.VarChar(191)
+  image           String   @db.VarChar(500)
+  gallery         String   @db.Text
+  price           String   @db.VarChar(50)
+  originalPrice   String?  @db.VarChar(50)
+  discount        String?  @db.VarChar(50)
+  duration        String   @db.VarChar(100)
+  rating          Float    @default(0)
+  reviews         Int      @default(0)
+  category        String   @db.VarChar(50)
+  highlights      String   @db.Text
+  groupSize       String   @db.VarChar(50)
+  featured        Boolean  @default(false) // Popular packages
+  isSpecialOffer  Boolean  @default(false) // Special offers
+  isNew           Boolean  @default(false) // New package notification
+  bestTime        String?  @db.VarChar(100)
+  description     String   @db.Text
+  itinerary       String   @db.Text
+  inclusions      String   @db.Text
+  exclusions      String   @db.Text
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}

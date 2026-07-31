@@ -188,3 +188,22 @@ img {
   transform: translateY(-2px);
   background-color: #f97316;
 }
+
+/* ─────────────────────────────────────────
+   ADMIN PANEL — clear black text on all inputs
+   ───────────────────────────────────────── */
+.admin-form input,
+.admin-form textarea,
+.admin-form select {
+  color: #000000 !important;
+  background-color: #ffffff !important;
+  border-color: #d1d5db !important;
+}
+.admin-form input::placeholder,
+.admin-form textarea::placeholder {
+  color: #9ca3af !important;
+}
+.admin-form label {
+  color: #111827 !important;
+  font-weight: 600 !important;
+}
