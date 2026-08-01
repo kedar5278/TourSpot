@@ -1,7 +1,36 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { allPackages } from "@/data/packages";
+import fs from "fs";
+import path from "path";
 
-// GET all packages (admin view)
+const dataFilePath = path.join(process.cwd(), "data", "packages.json");
+
+// Read packages from JSON file
+function readPackages() {
+  try {
+    if (fs.existsSync(dataFilePath)) {
+      const data = fs.readFileSync(dataFilePath, "utf-8");
+      return JSON.parse(data);
+    }
+  } catch (error) {
+    console.error("Error reading packages:", error);
+  }
+  // Fallback to static data
+  return allPackages;
+}
+
+// Write packages to JSON file
+function writePackages(packages: any[]) {
+  try {
+    fs.writeFileSync(dataFilePath, JSON.stringify(packages, null, 2), "utf-8");
+    return true;
+  } catch (error) {
+    console.error("Error writing packages:", error);
+    return false;
+  }
+}
+
+// GET all packages
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -11,50 +40,34 @@ export async function GET(req: Request) {
     const isSpecialOffer = searchParams.get("isSpecialOffer");
     const isNew = searchParams.get("isNew");
 
-    const where: any = {};
+    let packages = readPackages();
 
+    // Filter
     if (search) {
-      where.OR = [
-        { name: { contains: search } },
-        { location: { contains: search } },
-        { category: { contains: search } },
-      ];
+      packages = packages.filter((p: any) =>
+        p.name.toLowerCase().includes(search.toLowerCase()) ||
+        p.location.toLowerCase().includes(search.toLowerCase())
+      );
     }
 
     if (category && category !== "All") {
-      where.category = category;
+      packages = packages.filter((p: any) => p.category === category);
     }
 
     if (featured === "true") {
-      where.featured = true;
+      packages = packages.filter((p: any) => p.featured);
     }
 
     if (isSpecialOffer === "true") {
-      where.isSpecialOffer = true;
+      packages = packages.filter((p: any) => p.discount);
     }
 
     if (isNew === "true") {
-      where.isNew = true;
+      packages = packages.filter((p: any) => p.isNew);
     }
 
-    const packages = await prisma.package.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-    });
-
-    // Parse JSON fields
-    const parsed = packages.map((pkg) => ({
-      ...pkg,
-      gallery: JSON.parse(pkg.gallery || "[]"),
-      highlights: JSON.parse(pkg.highlights || "[]"),
-      itinerary: JSON.parse(pkg.itinerary || "[]"),
-      inclusions: JSON.parse(pkg.inclusions || "[]"),
-      exclusions: JSON.parse(pkg.exclusions || "[]"),
-    }));
-
-    return NextResponse.json({ packages: parsed });
+    return NextResponse.json({ packages });
   } catch (error: any) {
-    console.error("Get packages error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
@@ -63,74 +76,43 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const {
-      slug,
-      name,
-      location,
-      image,
-      gallery,
-      price,
-      originalPrice,
-      discount,
-      duration,
-      rating,
-      reviews,
-      category,
-      highlights,
-      groupSize,
-      featured,
-      isSpecialOffer,
-      isNew,
-      bestTime,
-      description,
-      itinerary,
-      inclusions,
-      exclusions,
-    } = body;
+    const packages = readPackages();
 
-    if (!slug || !name || !location || !image || !price || !duration || !category) {
-      return NextResponse.json(
-        { error: "Missing required fields: slug, name, location, image, price, duration, category" },
-        { status: 400 }
-      );
-    }
-
-    // Check if slug already exists
-    const existing = await prisma.package.findUnique({ where: { slug } });
-    if (existing) {
+    // Check if slug exists
+    if (packages.find((p: any) => p.slug === body.slug)) {
       return NextResponse.json({ error: "Package with this slug already exists" }, { status: 409 });
     }
 
-    const pkg = await prisma.package.create({
-      data: {
-        slug,
-        name,
-        location,
-        image,
-        gallery: JSON.stringify(gallery || []),
-        price,
-        originalPrice: originalPrice || null,
-        discount: discount || null,
-        duration,
-        rating: rating || 0,
-        reviews: reviews || 0,
-        category,
-        highlights: JSON.stringify(highlights || []),
-        groupSize: groupSize || "2–10",
-        featured: featured || false,
-        isSpecialOffer: isSpecialOffer || false,
-        isNew: isNew || false,
-        bestTime: bestTime || null,
-        description: description || "",
-        itinerary: JSON.stringify(itinerary || []),
-        inclusions: JSON.stringify(inclusions || []),
-        exclusions: JSON.stringify(exclusions || []),
-      },
-    });
+    const newPackage = {
+      slug: body.slug,
+      name: body.name,
+      location: body.location,
+      image: body.image || "/images/placeholder.jpg",
+      gallery: body.gallery || [],
+      price: body.price,
+      originalPrice: body.originalPrice || null,
+      discount: body.discount || null,
+      duration: body.duration,
+      rating: body.rating || 0,
+      reviews: body.reviews || 0,
+      category: body.category,
+      highlights: body.highlights || [],
+      groupSize: body.groupSize || "2–10",
+      featured: body.featured || false,
+      isSpecialOffer: body.isSpecialOffer || false,
+      isNew: body.isNew || false,
+      bestTime: body.bestTime || "",
+      description: body.description || "",
+      itinerary: body.itinerary || [],
+      inclusions: body.inclusions || [],
+      exclusions: body.exclusions || [],
+    };
 
-    return NextResponse.json({ package: pkg }, { status: 201 });
+    packages.push(newPackage);
+    writePackages(packages);
+
+    return NextResponse.json({ package: newPackage }, { status: 201 });
   } catch (error: any) {
-    console.error("Create package error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

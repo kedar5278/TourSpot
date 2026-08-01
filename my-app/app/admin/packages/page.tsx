@@ -3,13 +3,60 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
+interface Package {
+  slug: string;
+  name: string;
+  location: string;
+  image: string;
+  price: string;
+  originalPrice?: string;
+  discount?: string;
+  duration: string;
+  rating: number;
+  reviews: number;
+  category: string;
+  highlights: string[];
+  groupSize: string;
+  featured?: boolean;
+  description: string;
+  bestTime: string;
+  itinerary: { day: string; title: string; text: string }[];
+  inclusions: string[];
+  exclusions: string[];
+}
+
 export default function AdminPackages() {
-  const [packages, setPackages] = useState<any[]>([]);
+  const [packages, setPackages] = useState<Package[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editingPackage, setEditingPackage] = useState<Package | null>(null);
+  const [successMsg, setSuccessMsg] = useState("");
 
   const categories = ["All", "Mountain", "Beach", "Heritage", "Adventure", "Pilgrimage"];
+
+  // New package form state
+  const [form, setForm] = useState({
+    slug: "",
+    name: "",
+    location: "",
+    image: "",
+    price: "",
+    originalPrice: "",
+    discount: "",
+    duration: "",
+    rating: 0,
+    reviews: 0,
+    category: "Mountain",
+    highlights: "",
+    groupSize: "2–10",
+    featured: false,
+    bestTime: "",
+    description: "",
+    inclusions: "",
+    exclusions: "",
+  });
 
   useEffect(() => {
     fetchPackages();
@@ -17,11 +64,7 @@ export default function AdminPackages() {
 
   const fetchPackages = async () => {
     try {
-      const params = new URLSearchParams();
-      if (search) params.set("search", search);
-      if (category !== "All") params.set("category", category);
-
-      const res = await fetch(`/api/admin/packages?${params.toString()}`);
+      const res = await fetch("/api/admin/packages");
       const data = await res.json();
       setPackages(data.packages || []);
     } catch (error) {
@@ -31,74 +74,154 @@ export default function AdminPackages() {
     }
   };
 
-  const handleSearch = () => {
-    setLoading(true);
-    fetchPackages();
+  const resetForm = () => {
+    setForm({
+      slug: "", name: "", location: "", image: "", price: "",
+      originalPrice: "", discount: "", duration: "", rating: 0,
+      reviews: 0, category: "Mountain", highlights: "", groupSize: "2–10",
+      featured: false, bestTime: "", description: "", inclusions: "", exclusions: "",
+    });
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this package?")) return;
-
+  // Add Package
+  const handleAdd = async () => {
     try {
-      const res = await fetch(`/api/admin/packages/${id}`, {
-        method: "DELETE",
+      const res = await fetch("/api/admin/packages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          slug: form.slug || form.name.toLowerCase().replace(/\s+/g, "-"),
+          highlights: form.highlights.split(",").map((h) => h.trim()).filter(Boolean),
+          inclusions: form.inclusions.split(",").map((i) => i.trim()).filter(Boolean),
+          exclusions: form.exclusions.split(",").map((e) => e.trim()).filter(Boolean),
+          itinerary: [{ day: "Day 1", title: "Arrival", text: "Welcome to " + form.name }],
+        }),
       });
 
       if (res.ok) {
-        setPackages(packages.filter((p) => p.id !== id));
+        setShowAddModal(false);
+        resetForm();
+        fetchPackages();
+        showSuccess("Package added successfully!");
+      }
+    } catch (error) {
+      console.error("Failed to add package:", error);
+    }
+  };
+
+  // Delete Package
+  const handleDelete = async (slug: string) => {
+    if (!confirm("Are you sure you want to delete this package?")) return;
+
+    try {
+      const res = await fetch(`/api/admin/packages/${slug}`, { method: "DELETE" });
+      if (res.ok) {
+        fetchPackages();
+        showSuccess("Package deleted!");
       }
     } catch (error) {
       console.error("Failed to delete package:", error);
     }
   };
 
-  const toggleFeatured = async (id: string, current: boolean) => {
+  // Toggle Featured (Popular)
+  const toggleFeatured = async (slug: string, current: boolean) => {
     try {
-      const res = await fetch(`/api/admin/packages/${id}`, {
+      const res = await fetch(`/api/admin/packages/${slug}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ featured: !current }),
       });
-
       if (res.ok) {
         fetchPackages();
+        showSuccess(current ? "Removed from Popular" : "Added to Popular!");
       }
     } catch (error) {
-      console.error("Failed to update package:", error);
+      console.error("Failed to update:", error);
     }
   };
 
-  const toggleSpecialOffer = async (id: string, current: boolean) => {
+  // Toggle Special Offer
+  const toggleSpecialOffer = async (slug: string, currentDiscount: string | null) => {
     try {
-      const res = await fetch(`/api/admin/packages/${id}`, {
+      const res = await fetch(`/api/admin/packages/${slug}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isSpecialOffer: !current }),
+        body: JSON.stringify({
+          discount: currentDiscount ? null : "20% OFF",
+        }),
       });
-
       if (res.ok) {
         fetchPackages();
+        showSuccess(currentDiscount ? "Removed from Special Offers" : "Added to Special Offers!");
       }
     } catch (error) {
-      console.error("Failed to update package:", error);
+      console.error("Failed to update:", error);
     }
   };
 
-  const toggleNew = async (id: string, current: boolean) => {
+  // Edit Package
+  const handleEdit = async () => {
+    if (!editingPackage) return;
     try {
-      const res = await fetch(`/api/admin/packages/${id}`, {
+      const res = await fetch(`/api/admin/packages/${editingPackage.slug}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isNew: !current }),
+        body: JSON.stringify({
+          ...form,
+          highlights: form.highlights.split(",").map((h) => h.trim()).filter(Boolean),
+          inclusions: form.inclusions.split(",").map((i) => i.trim()).filter(Boolean),
+          exclusions: form.exclusions.split(",").map((e) => e.trim()).filter(Boolean),
+        }),
       });
-
       if (res.ok) {
+        setEditingPackage(null);
+        resetForm();
         fetchPackages();
+        showSuccess("Package updated!");
       }
     } catch (error) {
       console.error("Failed to update package:", error);
     }
   };
+
+  const openEditModal = (pkg: Package) => {
+    setEditingPackage(pkg);
+    setForm({
+      slug: pkg.slug,
+      name: pkg.name,
+      location: pkg.location,
+      image: pkg.image,
+      price: pkg.price,
+      originalPrice: pkg.originalPrice || "",
+      discount: pkg.discount || "",
+      duration: pkg.duration,
+      rating: pkg.rating,
+      reviews: pkg.reviews,
+      category: pkg.category,
+      highlights: (pkg.highlights || []).join(", "),
+      groupSize: pkg.groupSize,
+      featured: pkg.featured || false,
+      bestTime: pkg.bestTime || "",
+      description: pkg.description || "",
+      inclusions: (pkg.inclusions || []).join(", "),
+      exclusions: (pkg.exclusions || []).join(", "),
+    });
+  };
+
+  const showSuccess = (msg: string) => {
+    setSuccessMsg(msg);
+    setTimeout(() => setSuccessMsg(""), 3000);
+  };
+
+  const filteredPackages = packages.filter((pkg) => {
+    const matchesSearch =
+      pkg.name.toLowerCase().includes(search.toLowerCase()) ||
+      pkg.location.toLowerCase().includes(search.toLowerCase());
+    const matchesCategory = category === "All" || pkg.category === category;
+    return matchesSearch && matchesCategory;
+  });
 
   if (loading) {
     return (
@@ -108,22 +231,146 @@ export default function AdminPackages() {
     );
   }
 
+  const FormModal = ({ isEdit }: { isEdit: boolean }) => (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => { isEdit ? setEditingPackage(null) : setShowAddModal(false); resetForm(); }}>
+      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6" onClick={(e) => e.stopPropagation()}>
+        <h2 className="text-xl font-bold mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+          {isEdit ? "Edit Package" : "Add New Package"}
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {[
+            { label: "Name", key: "name", required: true },
+            { label: "Location", key: "location", required: true },
+            { label: "Image URL", key: "image", required: true },
+            { label: "Price (e.g. ₹5,999)", key: "price", required: true },
+            { label: "Original Price", key: "originalPrice" },
+            { label: "Discount (e.g. 20% OFF)", key: "discount" },
+            { label: "Duration (e.g. 3 Days / 2 Nights)", key: "duration", required: true },
+            { label: "Group Size", key: "groupSize" },
+            { label: "Best Time", key: "bestTime" },
+            { label: "Rating (0-5)", key: "rating", type: "number" },
+          ].map((field) => (
+            <div key={field.key}>
+              <label className="text-xs font-semibold text-gray-600 block mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
+                {field.label} {field.required && <span className="text-red-500">*</span>}
+              </label>
+              <input
+                type={field.type || "text"}
+                value={(form as any)[field.key]}
+                onChange={(e) => setForm({ ...form, [field.key]: field.type === "number" ? Number(e.target.value) : e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-black bg-white focus:ring-2 focus:ring-orange-300 outline-none"
+              />
+            </div>
+          ))}
+          <div className="sm:col-span-2">
+            <label className="text-xs font-semibold text-gray-600 block mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
+              Category
+            </label>
+            <select
+              value={form.category}
+              onChange={(e) => setForm({ ...form, category: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-black bg-white focus:ring-2 focus:ring-orange-300 outline-none"
+            >
+              {categories.filter((c) => c !== "All").map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+          <div className="sm:col-span-2">
+            <label className="text-xs font-semibold text-gray-600 block mb-1">Description</label>
+            <textarea
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              rows={3}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-black bg-white focus:ring-2 focus:ring-orange-300 outline-none"
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="text-xs font-semibold text-gray-600 block mb-1">Highlights (comma separated)</label>
+            <input
+              value={form.highlights}
+              onChange={(e) => setForm({ ...form, highlights: e.target.value })}
+              placeholder="Lake Boating, Mall Road, Snow View"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-black bg-white focus:ring-2 focus:ring-orange-300 outline-none"
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="text-xs font-semibold text-gray-600 block mb-1">Inclusions (comma separated)</label>
+            <input
+              value={form.inclusions}
+              onChange={(e) => setForm({ ...form, inclusions: e.target.value })}
+              placeholder="Hotel, Breakfast, Transfers"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-black bg-white focus:ring-2 focus:ring-orange-300 outline-none"
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="text-xs font-semibold text-gray-600 block mb-1">Exclusions (comma separated)</label>
+            <input
+              value={form.exclusions}
+              onChange={(e) => setForm({ ...form, exclusions: e.target.value })}
+              placeholder="Travel, Lunch, Personal expenses"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-black bg-white focus:ring-2 focus:ring-orange-300 outline-none"
+            />
+          </div>
+          <div className="sm:col-span-2 flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={form.featured}
+              onChange={(e) => setForm({ ...form, featured: e.target.checked })}
+              className="w-4 h-4 accent-orange-500"
+            />
+            <label className="text-sm font-semibold text-gray-600">Add to Popular Packages</label>
+          </div>
+        </div>
+        <div className="flex gap-3 mt-6">
+          <button
+            onClick={isEdit ? handleEdit : handleAdd}
+            className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2.5 rounded-lg transition-colors"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            {isEdit ? "Save Changes" : "Add Package"}
+          </button>
+          <button
+            onClick={() => { isEdit ? setEditingPackage(null) : setShowAddModal(false); resetForm(); }}
+            className="px-6 py-2.5 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="space-y-6">
+      {/* Success Toast */}
+      {successMsg && (
+        <div className="fixed top-4 right-4 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg font-semibold text-sm" style={{ fontFamily: "'Playfair Display', serif" }}>
+          ✅ {successMsg}
+        </div>
+      )}
+
+      {/* Add Modal */}
+      {showAddModal && <FormModal isEdit={false} />}
+
+      {/* Edit Modal */}
+      {editingPackage && <FormModal isEdit={true} />}
+
+      {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h1
-          className="text-2xl font-bold text-gray-800"
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800" style={{ fontFamily: "'Playfair Display', serif" }}>
+            Manage Packages
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">{filteredPackages.length} packages total</p>
+        </div>
+        <button
+          onClick={() => { resetForm(); setShowAddModal(true); }}
+          className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 rounded-lg font-semibold text-sm transition-colors flex items-center gap-2"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
-          Manage Packages
-        </h1>
-        <Link
-          href="/admin/packages/new"
-          className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-colors"
-          style={{ fontFamily: "'Playfair Display', serif" }}
-        >
-          + Add Package
-        </Link>
+          <span className="text-lg">+</span> Add Package
+        </button>
       </div>
 
       {/* Filters */}
@@ -134,27 +381,20 @@ export default function AdminPackages() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               placeholder="Search packages..."
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-300 focus:border-orange-400 outline-none text-black bg-white"
-              style={{ fontFamily: "'Playfair Display', serif" }}
             />
           </div>
           <div className="flex gap-2 flex-wrap">
             {categories.map((cat) => (
               <button
                 key={cat}
-                onClick={() => {
-                  setCategory(cat);
-                  setLoading(true);
-                  setTimeout(() => fetchPackages(), 100);
-                }}
+                onClick={() => setCategory(cat)}
                 className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
                   category === cat
                     ? "bg-orange-500 text-white"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
-                style={{ fontFamily: "'Playfair Display', serif" }}
               >
                 {cat}
               </button>
@@ -163,143 +403,94 @@ export default function AdminPackages() {
         </div>
       </div>
 
-      {/* Packages Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gray-50 text-left text-gray-500 text-sm">
-                <th className="px-6 py-3 font-medium" style={{ fontFamily: "'Playfair Display', serif" }}>Package</th>
-                <th className="px-6 py-3 font-medium" style={{ fontFamily: "'Playfair Display', serif" }}>Category</th>
-                <th className="px-6 py-3 font-medium" style={{ fontFamily: "'Playfair Display', serif" }}>Price</th>
-                <th className="px-6 py-3 font-medium" style={{ fontFamily: "'Playfair Display', serif" }}>Duration</th>
-                <th className="px-6 py-3 font-medium" style={{ fontFamily: "'Playfair Display', serif" }}>Popular</th>
-                <th className="px-6 py-3 font-medium" style={{ fontFamily: "'Playfair Display', serif" }}>Offer</th>
-                <th className="px-6 py-3 font-medium" style={{ fontFamily: "'Playfair Display', serif" }}>New</th>
-                <th className="px-6 py-3 font-medium" style={{ fontFamily: "'Playfair Display', serif" }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {packages.map((pkg) => (
-                <tr key={pkg.id} className="border-t border-gray-100 hover:bg-gray-50">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={pkg.image}
-                        alt={pkg.name}
-                        className="w-12 h-12 rounded-lg object-cover"
-                      />
-                      <div>
-                        <p className="font-semibold text-gray-800" style={{ fontFamily: "'Playfair Display', serif" }}>
-                          {pkg.name}
-                        </p>
-                        <p className="text-xs text-gray-500">{pkg.location}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full" style={{ fontFamily: "'Playfair Display', serif" }}>
-                      {pkg.category}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="font-semibold text-gray-800" style={{ fontFamily: "'Playfair Display', serif" }}>
-                      {pkg.price}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-sm text-gray-600" style={{ fontFamily: "'Playfair Display', serif" }}>
-                      {pkg.duration}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <button
-                      onClick={() => toggleFeatured(pkg.id, pkg.featured)}
-                      className={`w-10 h-6 rounded-full transition-colors ${
-                        pkg.featured ? "bg-green-500" : "bg-gray-300"
-                      }`}
-                    >
-                      <div
-                        className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform ${
-                          pkg.featured ? "translate-x-4" : "translate-x-0.5"
-                        }`}
-                      />
-                    </button>
-                  </td>
-                  <td className="px-6 py-4">
-                    <button
-                      onClick={() => toggleSpecialOffer(pkg.id, pkg.isSpecialOffer)}
-                      className={`w-10 h-6 rounded-full transition-colors ${
-                        pkg.isSpecialOffer ? "bg-purple-500" : "bg-gray-300"
-                      }`}
-                    >
-                      <div
-                        className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform ${
-                          pkg.isSpecialOffer ? "translate-x-4" : "translate-x-0.5"
-                        }`}
-                      />
-                    </button>
-                  </td>
-                  <td className="px-6 py-4">
-                    <button
-                      onClick={() => toggleNew(pkg.id, pkg.isNew)}
-                      className={`w-10 h-6 rounded-full transition-colors ${
-                        pkg.isNew ? "bg-orange-500" : "bg-gray-300"
-                      }`}
-                    >
-                      <div
-                        className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform ${
-                          pkg.isNew ? "translate-x-4" : "translate-x-0.5"
-                        }`}
-                      />
-                    </button>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <Link
-                        href={`/admin/packages/${pkg.id}/edit`}
-                        className="text-blue-500 hover:text-blue-600"
-                        title="Edit"
-                      >
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                      </Link>
-                      <Link
-                        href={`/packages/${pkg.slug}`}
-                        target="_blank"
-                        className="text-green-500 hover:text-green-600"
-                        title="View"
-                      >
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-1M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(pkg.id)}
-                        className="text-red-500 hover:text-red-600"
-                        title="Delete"
-                      >
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      {/* Packages List */}
+      <div className="space-y-3">
+        {filteredPackages.map((pkg) => (
+          <div key={pkg.slug} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition-shadow">
+            <div className="flex flex-col sm:flex-row gap-4">
+              {/* Image */}
+              <img src={pkg.image} alt={pkg.name} className="w-full sm:w-24 h-32 sm:h-24 rounded-lg object-cover flex-shrink-0" />
 
-        {packages.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500" style={{ fontFamily: "'Playfair Display', serif" }}>
-              No packages found
-            </p>
+              {/* Info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <h3 className="font-bold text-gray-800 text-lg" style={{ fontFamily: "'Playfair Display', serif" }}>{pkg.name}</h3>
+                    <p className="text-sm text-gray-500">{pkg.location} • {pkg.duration} • {pkg.category}</p>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <p className="font-bold text-gray-800 text-lg" style={{ fontFamily: "'Playfair Display', serif" }}>{pkg.price}</p>
+                    {pkg.originalPrice && <p className="text-sm text-orange-500 line-through">{pkg.originalPrice}</p>}
+                  </div>
+                </div>
+
+                {/* Badges & Actions */}
+                <div className="flex flex-wrap items-center gap-2 mt-3">
+                  {/* Popular Toggle */}
+                  <button
+                    onClick={() => toggleFeatured(pkg.slug, pkg.featured || false)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                      pkg.featured
+                        ? "bg-green-500 text-white hover:bg-green-600"
+                        : "bg-gray-100 text-gray-500 hover:bg-green-100 hover:text-green-600"
+                    }`}
+                  >
+                    {pkg.featured ? "★ Popular" : "+ Popular"}
+                  </button>
+
+                  {/* Special Offer Toggle */}
+                  <button
+                    onClick={() => toggleSpecialOffer(pkg.slug, pkg.discount)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                      pkg.discount
+                        ? "bg-purple-500 text-white hover:bg-purple-600"
+                        : "bg-gray-100 text-gray-500 hover:bg-purple-100 hover:text-purple-600"
+                    }`}
+                  >
+                    {pkg.discount ? `🏷 ${pkg.discount}` : "+ Special Offer"}
+                  </button>
+
+                  {/* Rating */}
+                  <span className="text-xs text-gray-500">⭐ {pkg.rating} ({pkg.reviews} reviews)</span>
+
+                  <div className="flex-1" />
+
+                  {/* Edit */}
+                  <button
+                    onClick={() => openEditModal(pkg)}
+                    className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                  >
+                    ✏️ Edit
+                  </button>
+
+                  {/* View */}
+                  <Link
+                    href={`/packages/${pkg.slug}`}
+                    target="_blank"
+                    className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
+                  >
+                    👁 View
+                  </Link>
+
+                  {/* Delete */}
+                  <button
+                    onClick={() => handleDelete(pkg.slug)}
+                    className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                  >
+                    🗑 Delete
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
-        )}
+        ))}
       </div>
+
+      {filteredPackages.length === 0 && (
+        <div className="text-center py-12 bg-white rounded-xl border border-gray-100">
+          <p className="text-gray-500">No packages found</p>
+        </div>
+      )}
     </div>
   );
 }

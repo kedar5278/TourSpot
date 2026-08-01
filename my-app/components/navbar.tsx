@@ -16,6 +16,7 @@ const navLinks = [
   { name: "Packages", href: "/packages" },
   { name: "Services", href: "/services" },
   { name: "Contact Us", href: "/contact" },
+  { name: "Admin", href: "/admin" },
 ];
 
 /** Shown when the user is NOT signed in — generic profile icon with a dropdown */
@@ -226,7 +227,11 @@ export default function Navbar() {
               <li key={link.name}>
                 <Link
                   href={link.href}
-                  className="text-white hover:text-orange-400 transition-colors duration-300 text-base font-medium"
+                  className={`transition-colors duration-300 text-base font-medium ${
+                    link.name === "Admin"
+                      ? "text-orange-400 hover:text-white border border-orange-400/50 hover:border-orange-400 px-3 py-1 rounded-full"
+                      : "text-white hover:text-orange-400"
+                  }`}
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
                   {link.name}
@@ -270,7 +275,11 @@ export default function Navbar() {
               key={link.name}
               href={link.href}
               onClick={() => setOpen(false)}
-              className="block px-6 py-4 text-white hover:text-orange-400 hover:bg-white/5 transition-all duration-300"
+              className={`block px-6 py-4 transition-all duration-300 ${
+                link.name === "Admin"
+                  ? "text-orange-400 hover:text-white hover:bg-orange-500/20 border-l-4 border-orange-400"
+                  : "text-white hover:text-orange-400 hover:bg-white/5"
+              }`}
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
               {link.name}

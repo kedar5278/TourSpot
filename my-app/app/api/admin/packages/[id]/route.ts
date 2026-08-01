@@ -1,31 +1,31 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { allPackages } from "@/data/packages";
+import fs from "fs";
+import path from "path";
 
-// GET single package
-export async function GET(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+const dataFilePath = path.join(process.cwd(), "data", "packages.json");
+
+// Read packages from JSON file
+function readPackages() {
   try {
-    const { id } = await params;
-    const pkg = await prisma.package.findUnique({ where: { id } });
-
-    if (!pkg) {
-      return NextResponse.json({ error: "Package not found" }, { status: 404 });
+    if (fs.existsSync(dataFilePath)) {
+      const data = fs.readFileSync(dataFilePath, "utf-8");
+      return JSON.parse(data);
     }
+  } catch (error) {
+    console.error("Error reading packages:", error);
+  }
+  return allPackages;
+}
 
-    const parsed = {
-      ...pkg,
-      gallery: JSON.parse(pkg.gallery || "[]"),
-      highlights: JSON.parse(pkg.highlights || "[]"),
-      itinerary: JSON.parse(pkg.itinerary || "[]"),
-      inclusions: JSON.parse(pkg.inclusions || "[]"),
-      exclusions: JSON.parse(pkg.exclusions || "[]"),
-    };
-
-    return NextResponse.json({ package: parsed });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+// Write packages to JSON file
+function writePackages(packages: any[]) {
+  try {
+    fs.writeFileSync(dataFilePath, JSON.stringify(packages, null, 2), "utf-8");
+    return true;
+  } catch (error) {
+    console.error("Error writing packages:", error);
+    return false;
   }
 }
 
@@ -37,42 +37,23 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await req.json();
+    const packages = readPackages();
 
-    const existing = await prisma.package.findUnique({ where: { id } });
-    if (!existing) {
+    const index = packages.findIndex((p: any) => p.slug === id);
+    if (index === -1) {
       return NextResponse.json({ error: "Package not found" }, { status: 404 });
     }
 
-    const updateData: any = {};
-    const fields = [
-      "slug", "name", "location", "image", "price", "originalPrice",
-      "discount", "duration", "rating", "reviews", "category",
-      "groupSize", "featured", "isSpecialOffer", "isNew", "bestTime",
-      "description", "active",
-    ];
+    // Update package
+    packages[index] = {
+      ...packages[index],
+      ...body,
+    };
 
-    for (const field of fields) {
-      if (body[field] !== undefined) {
-        updateData[field] = body[field];
-      }
-    }
+    writePackages(packages);
 
-    // Handle JSON fields
-    const jsonFields = ["gallery", "highlights", "itinerary", "inclusions", "exclusions"];
-    for (const field of jsonFields) {
-      if (body[field] !== undefined) {
-        updateData[field] = JSON.stringify(body[field]);
-      }
-    }
-
-    const pkg = await prisma.package.update({
-      where: { id },
-      data: updateData,
-    });
-
-    return NextResponse.json({ package: pkg });
+    return NextResponse.json({ package: packages[index] });
   } catch (error: any) {
-    console.error("Update package error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
@@ -84,15 +65,18 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+    const packages = readPackages();
 
-    const existing = await prisma.package.findUnique({ where: { id } });
-    if (!existing) {
+    const index = packages.findIndex((p: any) => p.slug === id);
+    if (index === -1) {
       return NextResponse.json({ error: "Package not found" }, { status: 404 });
     }
 
-    await prisma.package.delete({ where: { id } });
+    // Remove package
+    packages.splice(index, 1);
+    writePackages(packages);
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ message: "Package deleted" });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

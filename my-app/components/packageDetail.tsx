@@ -20,9 +20,9 @@ import {
 } from "react-icons/fi";
 import { useAuth, SignInButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { allPackages } from "@/data/packages";
 
 interface Package {
-  id: string;
   slug: string;
   name: string;
   location: string;
@@ -57,40 +57,20 @@ export default function PackageDetail({ slug }: { slug: string }) {
   const router = useRouter();
 
   useEffect(() => {
-    fetchPackage();
-  }, [slug]);
-
-  const fetchPackage = async () => {
-    try {
-      const res = await fetch(`/api/packages?slug=${slug}`);
-      const data = await res.json();
-      if (data.packages && data.packages.length > 0) {
-        setPkg(data.packages[0]);
-      } else {
-        setNotFound(true);
-      }
-    } catch (error) {
-      console.error("Failed to fetch package:", error);
+    // Find package from static data
+    const found = allPackages.find((p) => p.slug === slug);
+    if (found) {
+      setPkg(found as Package);
+      // Get related packages from same category
+      const relatedPkgs = allPackages
+        .filter((p) => p.category === found.category && p.slug !== slug)
+        .slice(0, 3) as Package[];
+      setRelated(relatedPkgs);
+    } else {
       setNotFound(true);
-    } finally {
-      setLoading(false);
     }
-  };
-
-  // Fetch related packages
-  useEffect(() => {
-    if (pkg) {
-      fetch(`/api/packages?category=${pkg.category}`)
-        .then((res) => res.json())
-        .then((data) => {
-          const relatedPkgs = (data.packages || [])
-            .filter((p: Package) => p.slug !== pkg.slug)
-            .slice(0, 3);
-          setRelated(relatedPkgs);
-        })
-        .catch(console.error);
-    }
-  }, [pkg]);
+    setLoading(false);
+  }, [slug]);
 
   if (loading) {
     return (

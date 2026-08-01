@@ -94,6 +94,7 @@ export default function Hero() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               <input
+                suppressHydrationWarning
                 type="text"
                 value={query}
                 onChange={handleChange}
@@ -104,6 +105,7 @@ export default function Hero() {
               />
             </div>
             <button
+              suppressHydrationWarning
               type="submit"
               className="bg-orange-500 hover:bg-orange-600 text-white px-2 py-3 md:px-4 text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ fontFamily: "'Playfair Display', serif" }}

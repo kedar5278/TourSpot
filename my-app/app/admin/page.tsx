@@ -2,56 +2,47 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { allPackages } from "@/data/packages";
 
-interface Stats {
-  totalPackages: number;
-  popularPackages: number;
-  specialOffers: number;
-  newPackages: number;
-  categories: { [key: string]: number };
+interface Package {
+  slug: string;
+  name: string;
+  location: string;
+  image: string;
+  price: string;
+  category: string;
+  featured?: boolean;
+  discount?: string;
 }
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState<Stats>({
+  const [stats, setStats] = useState({
     totalPackages: 0,
     popularPackages: 0,
     specialOffers: 0,
-    newPackages: 0,
-    categories: {},
+    categories: {} as { [key: string]: number },
   });
-  const [recentPackages, setRecentPackages] = useState<any[]>([]);
+  const [recentPackages, setRecentPackages] = useState<Package[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchStats();
+    const packages = allPackages as Package[];
+
+    const categories: { [key: string]: number } = {};
+    packages.forEach((pkg) => {
+      categories[pkg.category] = (categories[pkg.category] || 0) + 1;
+    });
+
+    setStats({
+      totalPackages: packages.length,
+      popularPackages: packages.filter((p) => p.featured).length,
+      specialOffers: packages.filter((p) => p.discount).length,
+      categories,
+    });
+
+    setRecentPackages(packages.slice(0, 5));
+    setLoading(false);
   }, []);
-
-  const fetchStats = async () => {
-    try {
-      const res = await fetch("/api/admin/packages");
-      const data = await res.json();
-      const packages = data.packages || [];
-
-      const categories: { [key: string]: number } = {};
-      packages.forEach((pkg: any) => {
-        categories[pkg.category] = (categories[pkg.category] || 0) + 1;
-      });
-
-      setStats({
-        totalPackages: packages.length,
-        popularPackages: packages.filter((p: any) => p.featured).length,
-        specialOffers: packages.filter((p: any) => p.isSpecialOffer).length,
-        newPackages: packages.filter((p: any) => p.isNew).length,
-        categories,
-      });
-
-      setRecentPackages(packages.slice(0, 5));
-    } catch (error) {
-      console.error("Failed to fetch stats:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -72,19 +63,19 @@ export default function AdminDashboard() {
       title: "Popular Packages",
       value: stats.popularPackages,
       color: "bg-green-500",
-      href: "/admin/packages?featured=true",
+      href: "/admin/packages",
     },
     {
       title: "Special Offers",
       value: stats.specialOffers,
       color: "bg-purple-500",
-      href: "/admin/packages?special=true",
+      href: "/admin/packages",
     },
     {
-      title: "New Packages",
-      value: stats.newPackages,
+      title: "Categories",
+      value: Object.keys(stats.categories).length,
       color: "bg-orange-500",
-      href: "/admin/packages?new=true",
+      href: "/admin/packages",
     },
   ];
 
@@ -98,11 +89,12 @@ export default function AdminDashboard() {
           Dashboard
         </h1>
         <Link
-          href="/admin/packages/new"
+          href="/packages"
+          target="_blank"
           className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-colors"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
-          + Add Package
+          View Website →
         </Link>
       </div>
 
@@ -200,7 +192,7 @@ export default function AdminDashboard() {
             </thead>
             <tbody>
               {recentPackages.map((pkg) => (
-                <tr key={pkg.id} className="border-b border-gray-50">
+                <tr key={pkg.slug} className="border-b border-gray-50">
                   <td className="py-3">
                     <div className="flex items-center gap-3">
                       <img
@@ -233,25 +225,21 @@ export default function AdminDashboard() {
                           Popular
                         </span>
                       )}
-                      {pkg.isSpecialOffer && (
+                      {pkg.discount && (
                         <span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded-full">
-                          Offer
-                        </span>
-                      )}
-                      {pkg.isNew && (
-                        <span className="bg-orange-100 text-orange-700 text-xs px-2 py-0.5 rounded-full">
-                          New
+                          {pkg.discount}
                         </span>
                       )}
                     </div>
                   </td>
                   <td className="py-3">
                     <Link
-                      href={`/admin/packages/${pkg.id}/edit`}
+                      href={`/packages/${pkg.slug}`}
+                      target="_blank"
                       className="text-orange-500 hover:text-orange-600 text-sm font-semibold"
                       style={{ fontFamily: "'Playfair Display', serif" }}
                     >
-                      Edit
+                      View →
                     </Link>
                   </td>
                 </tr>

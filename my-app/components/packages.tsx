@@ -12,9 +12,9 @@ import {
   FiCheckCircle,
   FiFilter,
 } from "react-icons/fi";
+import { allPackages } from "@/data/packages";
 
 interface Package {
-  id: string;
   slug: string;
   name: string;
   location: string;
@@ -44,24 +44,7 @@ const categories = [
 
 export default function PackagesPage() {
   const [active, setActive] = useState("All");
-  const [allPackages, setAllPackages] = useState<Package[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchPackages();
-  }, []);
-
-  const fetchPackages = async () => {
-    try {
-      const res = await fetch("/api/packages");
-      const data = await res.json();
-      setAllPackages(data.packages || []);
-    } catch (error) {
-      console.error("Failed to fetch packages:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [loading, setLoading] = useState(false);
 
   const filtered =
     active === "All"

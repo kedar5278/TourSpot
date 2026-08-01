@@ -45,6 +45,7 @@ export default function NotificationBell() {
   return (
     <div className="relative">
       <button
+        suppressHydrationWarning
         onClick={() => {
           setIsOpen(!isOpen);
           if (!isOpen) clearNotifications();
