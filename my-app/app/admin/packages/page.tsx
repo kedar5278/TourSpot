@@ -143,7 +143,7 @@ export default function AdminPackages() {
   };
 
   // Toggle Special Offer
-  const toggleSpecialOffer = async (slug: string, currentDiscount: string | null) => {
+  const toggleSpecialOffer = async (slug: string, currentDiscount: string | null | undefined) => {
     try {
       const res = await fetch(`/api/admin/packages/${slug}`, {
         method: "PUT",
