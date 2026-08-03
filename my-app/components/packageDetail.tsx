@@ -20,8 +20,6 @@ import {
 } from "react-icons/fi";
 import { useAuth, SignInButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { allPackages } from "@/data/packages";
-
 interface Package {
   slug: string;
   name: string;
@@ -57,19 +55,26 @@ export default function PackageDetail({ slug }: { slug: string }) {
   const router = useRouter();
 
   useEffect(() => {
-    // Find package from static data
-    const found = allPackages.find((p) => p.slug === slug);
-    if (found) {
-      setPkg(found as Package);
-      // Get related packages from same category
-      const relatedPkgs = allPackages
-        .filter((p) => p.category === found.category && p.slug !== slug)
-        .slice(0, 3) as Package[];
-      setRelated(relatedPkgs);
-    } else {
-      setNotFound(true);
-    }
-    setLoading(false);
+    fetch("/api/admin/packages")
+      .then((res) => res.json())
+      .then((data) => {
+        const packages = data.packages || [];
+        const found = packages.find((p: any) => p.slug === slug);
+        if (found) {
+          setPkg(found as Package);
+          const relatedPkgs = packages
+            .filter((p: any) => p.category === found.category && p.slug !== slug)
+            .slice(0, 3) as Package[];
+          setRelated(relatedPkgs);
+        } else {
+          setNotFound(true);
+        }
+        setLoading(false);
+      })
+      .catch(() => {
+        setNotFound(true);
+        setLoading(false);
+      });
   }, [slug]);
 
   if (loading) {

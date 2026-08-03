@@ -12,8 +12,6 @@ import {
   FiCheckCircle,
   FiFilter,
 } from "react-icons/fi";
-import { allPackages } from "@/data/packages";
-
 interface Package {
   slug: string;
   name: string;
@@ -44,12 +42,23 @@ const categories = [
 
 export default function PackagesPage() {
   const [active, setActive] = useState("All");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [allPkgs, setAllPkgs] = useState<Package[]>([]);
+
+  useEffect(() => {
+    fetch("/api/admin/packages")
+      .then((res) => res.json())
+      .then((data) => {
+        setAllPkgs(data.packages || []);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
 
   const filtered =
     active === "All"
-      ? allPackages
-      : allPackages.filter((p) => p.category === active);
+      ? allPkgs
+      : allPkgs.filter((p) => p.category === active);
 
   return (
     <div className="font-sans text-gray-800 bg-white">

@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { allPackages } from "@/data/packages";
 import {
   FiChevronLeft,
   FiChevronRight,
@@ -31,8 +30,16 @@ export default function PackageCarousel() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [packages, setPackages] = useState<Package[]>([]);
 
-  const packages = allPackages as Package[];
+  useEffect(() => {
+    fetch("/api/admin/packages")
+      .then((res) => res.json())
+      .then((data) => {
+        setPackages(data.packages || []);
+      })
+      .catch(() => {});
+  }, []);
 
   const checkScroll = () => {
     if (scrollRef.current) {

@@ -1,22 +1,29 @@
 "use client";
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { allPackages } from '@/data/packages';
 
 export default function Hero() {
   const [query, setQuery] = useState('');
   const [error, setError] = useState('');
+  const [allPkgs, setAllPkgs] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/admin/packages')
+      .then((res) => res.json())
+      .then((data) => setAllPkgs(data.packages || []))
+      .catch(() => {});
+  }, []);
 
   const matches = useMemo(() => {
     const value = query.trim().toLowerCase();
     if (!value) return [];
 
-    return allPackages.filter((pkg) => {
-      const haystack = `${pkg.name} ${pkg.location} ${pkg.category} ${pkg.highlights.join(' ')}`.toLowerCase();
+    return allPkgs.filter((pkg) => {
+      const haystack = `${pkg.name} ${pkg.location} ${pkg.category} ${(pkg.highlights || []).join(' ')}`.toLowerCase();
       return haystack.includes(value);
     });
-  }, [query]);
+  }, [query, allPkgs]);
 
   const trimmedQuery = query.trim();
   const showNotFound = trimmedQuery.length >= 2 && matches.length === 0 && !error;

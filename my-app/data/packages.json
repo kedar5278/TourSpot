@@ -106,7 +106,7 @@
       "Ayurveda"
     ],
     "groupSize": "2–10",
-    "featured": false,
+    "featured": true,
     "bestTime": "September – March",
     "description": "God's Own Country — Kerala — is a lush tropical paradise.",
     "itinerary": [
@@ -148,7 +148,7 @@
       "Ram Ghat"
     ],
     "groupSize": "2–20",
-    "featured": false,
+    "featured": true,
     "bestTime": "October – March",
     "description": "One of the seven sacred cities of India, Ujjain is a spiritual powerhouse.",
     "itinerary": [
@@ -190,7 +190,7 @@
       "Sarnath"
     ],
     "groupSize": "2–15",
-    "featured": true,
+    "featured": false,
     "bestTime": "October – March",
     "description": "The spiritual capital of India, Varanasi is one of the oldest living cities.",
     "itinerary": [
@@ -316,7 +316,7 @@
       "Island Hop"
     ],
     "groupSize": "2–8",
-    "featured": true,
+    "featured": false,
     "bestTime": "October – May",
     "description": "A pristine archipelago of 36 islands in the Arabian Sea.",
     "itinerary": [
@@ -358,7 +358,7 @@
       "Water Sports"
     ],
     "groupSize": "2–16",
-    "featured": true,
+    "featured": false,
     "bestTime": "November – February",
     "description": "India's favourite beach destination, Goa is a sun-soaked paradise.",
     "itinerary": [

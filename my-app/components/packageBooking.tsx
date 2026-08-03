@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Footer from "./footer";
-import { allPackages } from "@/data/packages";
 import {
   FiArrowLeft,
   FiArrowRight,
@@ -21,6 +20,29 @@ import {
   FiCheck,
   FiXCircle,
 } from "react-icons/fi";
+
+interface Package {
+  slug: string;
+  name: string;
+  location: string;
+  image: string;
+  gallery: string[];
+  price: string;
+  originalPrice?: string;
+  discount?: string;
+  duration: string;
+  rating: number;
+  reviews: number;
+  category: string;
+  highlights: string[];
+  groupSize: string;
+  featured?: boolean;
+  description: string;
+  bestTime: string;
+  itinerary: { day: string; title: string; text: string }[];
+  inclusions: string[];
+  exclusions: string[];
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -167,7 +189,7 @@ function SummaryCard({
   pkg,
   booking,
 }: {
-  pkg: NonNullable<ReturnType<typeof allPackages.find>>;
+  pkg: Package;
   booking: BookingState;
 }) {
   const base = parsePriceNumber(pkg.price) * booking.guests;
@@ -282,7 +304,7 @@ function Step1({
   showErrors,
 }: {
   booking: BookingState;
-  pkg: NonNullable<ReturnType<typeof allPackages.find>>;
+  pkg: Package;
   onChange: (k: keyof BookingState, v: BookingState[keyof BookingState]) => void;
   showErrors: boolean;
 }) {
@@ -728,7 +750,7 @@ function SuccessScreen({
   pkg,
   booking,
 }: {
-  pkg: NonNullable<ReturnType<typeof allPackages.find>>;
+  pkg: Package;
   booking: BookingState;
 }) {
   const base = parsePriceNumber(pkg.price) * booking.guests;
@@ -886,7 +908,8 @@ function SuccessScreen({
 // ─── Main Component ────────────────────────────────────────────────────────────
 
 export default function PackageBooking({ slug }: { slug: string }) {
-  const pkg = allPackages.find((p) => p.slug === slug);
+  const [pkg, setPkg] = useState<Package | null>(null);
+  const [loading, setLoading] = useState(true);
   const [step, setStep] = useState<Step>(1);
   const [submitted, setSubmitted] = useState(false);
   const [showErrors, setShowErrors] = useState(false);
@@ -903,6 +926,17 @@ export default function PackageBooking({ slug }: { slug: string }) {
     cardCvv: "",
     upiId: "",
   });
+
+  useEffect(() => {
+    fetch("/api/admin/packages")
+      .then((res) => res.json())
+      .then((data) => {
+        const found = (data.packages || []).find((p: any) => p.slug === slug);
+        setPkg(found || null);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [slug]);
 
   const handleChange = (
     key: keyof BookingState,

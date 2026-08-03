@@ -1,5 +1,21 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { allPackages } from "@/data/packages";
+import fs from "fs";
+import path from "path";
+
+const dataFilePath = path.join(process.cwd(), "data", "packages.json");
+
+function readPackages() {
+  try {
+    if (fs.existsSync(dataFilePath)) {
+      const data = fs.readFileSync(dataFilePath, "utf-8");
+      return JSON.parse(data);
+    }
+  } catch (error) {
+    console.error("Error reading packages:", error);
+  }
+  return allPackages;
+}
 
 // GET public packages (for frontend)
 export async function GET(req: Request) {
@@ -11,43 +27,29 @@ export async function GET(req: Request) {
     const isNew = searchParams.get("isNew");
     const slug = searchParams.get("slug");
 
-    const where: any = { active: true };
+    let packages = readPackages();
 
     if (slug) {
-      where.slug = slug;
+      packages = packages.filter((p: any) => p.slug === slug);
     }
 
     if (category && category !== "All") {
-      where.category = category;
+      packages = packages.filter((p: any) => p.category === category);
     }
 
     if (featured === "true") {
-      where.featured = true;
+      packages = packages.filter((p: any) => p.featured);
     }
 
     if (isSpecialOffer === "true") {
-      where.isSpecialOffer = true;
+      packages = packages.filter((p: any) => p.discount);
     }
 
     if (isNew === "true") {
-      where.isNew = true;
+      packages = packages.filter((p: any) => p.isNew);
     }
 
-    const packages = await prisma.package.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-    });
-
-    const parsed = packages.map((pkg) => ({
-      ...pkg,
-      gallery: JSON.parse(pkg.gallery || "[]"),
-      highlights: JSON.parse(pkg.highlights || "[]"),
-      itinerary: JSON.parse(pkg.itinerary || "[]"),
-      inclusions: JSON.parse(pkg.inclusions || "[]"),
-      exclusions: JSON.parse(pkg.exclusions || "[]"),
-    }));
-
-    return NextResponse.json({ packages: parsed });
+    return NextResponse.json({ packages });
   } catch (error: any) {
     console.error("Get public packages error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
