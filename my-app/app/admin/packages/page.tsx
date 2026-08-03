@@ -440,7 +440,7 @@ export default function AdminPackages() {
 
                   {/* Special Offer Toggle */}
                   <button
-                    onClick={() => toggleSpecialOffer(pkg.slug, pkg.discount)}
+                    onClick={() => toggleSpecialOffer(pkg.slug, pkg.discount ?? null)}
                     className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
                       pkg.discount
                         ? "bg-purple-500 text-white hover:bg-purple-600"
