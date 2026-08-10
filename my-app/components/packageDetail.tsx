@@ -3,6 +3,7 @@
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import Footer from "./footer";
+import { useAuth } from "@clerk/nextjs";
 import {
   FiMapPin,
   FiCalendar,
@@ -18,7 +19,6 @@ import {
   FiShare2,
   FiDownload,
 } from "react-icons/fi";
-import { useAuth, SignInButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 interface Package {
   slug: string;
