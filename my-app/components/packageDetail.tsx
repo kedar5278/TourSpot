@@ -465,37 +465,6 @@ export default function PackageDetail({ slug }: { slug: string }) {
 
             {/* Card body */}
             <div className="p-6 space-y-4">
-              {/* Date selector */}
-              <div>
-                <label
-                  className="text-xs font-semibold text-gray-700 block mb-1"
-                  style={{ fontFamily: "'Playfair Display', serif" }}
-                >
-                  Select Travel Date
-                </label>
-                <input
-                  type="date"
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-300 focus:border-orange-400 outline-none"
-                />
-              </div>
-
-              {/* Guests */}
-              <div>
-                <label
-                  className="text-xs font-semibold text-gray-700 block mb-1"
-                  style={{ fontFamily: "'Playfair Display', serif" }}
-                >
-                  Number of Guests
-                </label>
-                <select className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-300 focus:border-orange-400 outline-none">
-                  {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
-                    <option key={n} value={n}>
-                      {n} {n === 1 ? "Guest" : "Guests"}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
               {/* Book Now */}
               {isSignedIn ? (
                 <button

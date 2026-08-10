@@ -989,6 +989,7 @@ export default function PackageBooking({ slug }: { slug: string }) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
+              email: booking.travelers[0]?.email || "",
               packageSlug: slug,
               packageName: pkg.name,
               packageImage: pkg.image,

@@ -1,19 +1,13 @@
 // app/api/booking/route.ts
 import { NextResponse } from "next/server";
-import { auth, currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
-  const { userId } = await auth();
-  const user = await currentUser();
-
-  if (!userId || !user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   try {
     const body = await req.json();
     const {
+      userId,
+      email,
       packageSlug,
       packageName,
       packageImage,
@@ -28,13 +22,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing required booking data" }, { status: 400 });
     }
 
-    const email = user.primaryEmailAddress?.emailAddress ?? "";
     const bookingRef = "TS" + Math.floor(100000 + Math.random() * 900000);
 
     const booking = await prisma.booking.create({
       data: {
-        userId,
-        email,
+        userId: userId || "guest",
+        email: email || "",
         bookingRef,
         packageSlug,
         packageName,
