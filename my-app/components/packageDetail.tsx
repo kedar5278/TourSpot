@@ -3,7 +3,7 @@
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import Footer from "./footer";
-import { useAuth, SignInButton } from "@clerk/nextjs";
+import { useAuth, SignIn } from "@clerk/nextjs";
 import {
   FiMapPin,
   FiCalendar,
@@ -479,7 +479,16 @@ export default function PackageDetail({ slug }: { slug: string }) {
                   <FiArrowRight className="book-now-arrow text-base" />
                 </button>
               ) : (
-                <SignInButton mode="modal" forceRedirectUrl={`/packages/${pkg.slug}/book`}>
+                <SignIn
+                  redirectUrl={`/packages/${pkg.slug}/book`}
+                  appearance={{
+                    elements: {
+                      card: "shadow-lg",
+                      headerTitle: "text-gray-800",
+                      headerSubtitle: "text-gray-500",
+                    }
+                  }}
+                >
                   <button
                     className="book-now-btn w-full inline-flex items-center justify-center gap-2 font-semibold text-sm border border-orange-500 text-orange-500 px-5 py-3 rounded-full"
                     style={{ fontFamily: "'Playfair Display', serif" }}
@@ -487,7 +496,7 @@ export default function PackageDetail({ slug }: { slug: string }) {
                     <span className="book-now-text">Book This Package</span>
                     <FiArrowRight className="book-now-arrow text-base" />
                   </button>
-                </SignInButton>
+                </SignIn>
               )}
 
               <Link href="/contact">
